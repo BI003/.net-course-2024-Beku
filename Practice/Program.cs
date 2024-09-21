@@ -1,4 +1,5 @@
-﻿using BankSystem.Domain.Models;
+﻿using BankSystem.App.Services;
+using BankSystem.Domain.Models;
 
 internal class Program
 {
@@ -18,6 +19,18 @@ internal class Program
         Update(ref currency ,newPrice);
         Console.WriteLine($"После: {currency.Price}");
 
+        var bankService = new BankService(2, 10000, 2000);
+
+        var onwerSalary = bankService.OwnerSalaryCalculation();
+        Console.WriteLine($"Зарплата каждого владельца: {onwerSalary}");
+        
+        var client = new Client("Дмитрий", "Дмитриевич", 987654, 373898989);
+        
+        Console.WriteLine($"Клиент банка: {client.Name}, {client.Surname}, {client.Passport}, {client.Number}");
+        var newContract2 = " Клиент стал Сотрудником";
+        var newEmployee = BankService.ConvertClientInEmployee(client, newContract2);
+        Console.WriteLine($"Сотрудник: {newEmployee.Name}, {newEmployee.Surname}, Контракт: {newEmployee.Contract }");
+
         Console.ReadLine();
     
         static void CreateContract(Employee employee, string contract)
@@ -31,6 +44,5 @@ internal class Program
             currency.Price = price;
             Console.WriteLine("Свойства изменяются!");
         }
-
     } 
 } 
