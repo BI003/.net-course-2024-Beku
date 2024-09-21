@@ -3,21 +3,35 @@ namespace BankSystem.App.Services
 {
     public class BankService
     {
-        public int NumberOwners { get; set; }
         public int Profit { get; set; }
         public int Expenses {  get; set; }
+        public List<Employee> Owners { get; set; }
 
-        public BankService(int numberOwners, int profit, int expenses) 
+        public BankService(int profit, int expenses, List<Employee> owners) 
         {
-            NumberOwners = numberOwners;
             Profit = profit;
             Expenses = expenses;
+            Owners = owners;
         }
         
         public int OwnerSalaryCalculation() 
         {
-            var OwnersSalary = (Profit - Expenses) / NumberOwners;
-            return OwnersSalary;
+            int ownerCount = 0;
+
+            foreach (var owner in Owners)
+            {
+                if (owner.IsOwner)
+                {
+                    ownerCount++;
+                }
+            }
+
+            if (ownerCount == 0)
+            {
+                throw new InvalidOperationException("Нет владельцев!");
+            }
+
+            return (Profit - Expenses) / ownerCount;
         }
         
 
