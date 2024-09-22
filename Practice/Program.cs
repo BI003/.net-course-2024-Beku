@@ -6,35 +6,24 @@ internal class Program
     private static void Main(string[] args)
     {
         var employee = new Employee("Иван", "Беку", 123, 37360125);
-
         Console.WriteLine($"До: {employee.Contract}");
         var newContract = "Контракт создан!";
         CreateContract(employee, newContract);
         Console.WriteLine($"После: {employee.Contract}");
 
         var currency = new Currency("Доллары", 10);
-
         Console.WriteLine($"До: {currency.Price}");
         var newPrice = 20;
         Update(ref currency ,newPrice);
         Console.WriteLine($"После: {currency.Price}");
 
-
-
-        var employee1 = new Employee("Иван", "Беку", 123, 37360125, true);
-        var employee2 = new Employee("Пётр", "Петров", 456, 37360126, false);
-        var employee3 = new Employee("Анна", "Смирнова", 789, 37360127, true);
-
-        var owners = new List<Employee> { employee1, employee2, employee3 };
-        var bankService = new BankService(10000, 2000 ,owners);
-
-        var ownerSalary = bankService.OwnerSalaryCalculation();
+        var bankService = new BankService(10000, 2000 , 2);
+        var ownerSalary = BankService.OwnerSalaryCalculation(bankService.Profit, bankService.Expenses, bankService.NumberOwners);
+        BankService.OwnerSalaryCalculation(bankService.Profit, bankService.Expenses, bankService.NumberOwners);
+        Console.WriteLine($"Владельцев: {bankService.NumberOwners}");
         Console.WriteLine($"Зарплата каждого владельца: {ownerSalary}");
 
-
-
         var client = new Client("Дмитрий", "Дмитриевич", 987654, 373898989);
-        
         Console.WriteLine($"Клиент банка: {client.Name}, {client.Surname}, {client.Passport}, {client.Number}");
         var newContract2 = " Клиент стал Сотрудником";
         var newEmployee = BankService.ConvertClientInEmployee(client, newContract2);
