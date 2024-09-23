@@ -26,8 +26,11 @@ namespace BankSystem.App.Services
 
         public static Employee ConvertClientInEmployee(Client client, string contract) 
         {
-            var employee = new Employee(client.Name, client.Surname, client.Passport, client.Number);
-            
+            var employee = new Employee();
+            employee.Name = client.Name;
+            employee.Surname = client.Surname;
+            employee.Passport = client.Passport;
+            employee.Number = client.Number;
             employee.Contract = contract;
             
             return employee;

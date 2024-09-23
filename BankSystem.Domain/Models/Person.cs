@@ -6,13 +6,5 @@
         public string Surname { get; set; }
         public int Passport { get; set; }
         public int Number {  get; set; }
-
-        public Person(string name, string surname, int passport, int number) 
-        {
-            Name = name;
-            Surname = surname;
-            Passport = passport;
-            Number = number;
-        }
     }
 }
