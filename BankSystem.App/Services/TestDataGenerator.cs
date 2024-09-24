@@ -1,81 +1,58 @@
 ﻿using BankSystem.Domain.Models;
-
+using Bogus;
 namespace BankSystem.App.Services
 {
     public class TestDataGenerator
     {
-        private static Random _random = new Random();
-        public List<Client> GenerateClient()
+        public List<Client> GenerateClients()
         {
-            var clients = new List<Client>(1000);
+            var clients = new List<Client>();
+            var faker = new Faker<Client>("ru")
+                .RuleFor(c => c.Name, f => f.Name.FirstName())
+                .RuleFor(c => c.Surname, f => f.Name.LastName())
+                .RuleFor(c => c.Number, f => f.Random.Int(3731000, 3732000))
+                .RuleFor(c => c.Age, f => f.Random.Int(18, 50));
+
+            clients.AddRange(faker.Generate(1000));
+            return clients;
+        }
+        public Dictionary<int, Client> GenerateClientsDictionary()
+        {
+            var clientDictionary = new Dictionary<int, Client>();
+            var faker = new Faker<Client>("ru")
+                .RuleFor(c => c.Name, f => f.Name.FirstName())
+                .RuleFor(c => c.Surname, f => f.Name.LastName())
+                .RuleFor(c => c.Number, f => f.Random.Int(3731000, 3732000))
+                .RuleFor(c => c.Age, f => f.Random.Int(18, 50));
 
             for (int i = 0; i < 1000; i++)
             {
-                var client = new Client();
-
-                client.Name = GenerateRandomName();
-                client.Surname = GenerateRandomSurname();
-                client.Passport = GenerateRandomPassport();
-                client.Number = GenerateRandomNumber();
-                
-                clients.Add(client);
-            }
-            return clients;
-        }
-        public Dictionary<int, Client> GenerateClientsDictionary() 
-        {
-            var clientDictionary = new Dictionary<int, Client>();
-            for (int i = 0;i < 1000; i++)
-            {
-                var client = new Client();
-
-                client.Name = GenerateRandomName();
-                client.Surname= GenerateRandomSurname();
-                client.Passport = GenerateRandomPassport();
-                client.Number = GenerateRandomNumber();
-
-                clientDictionary.TryAdd(client.Number, client);
+                var client = faker.Generate();
+                if (!clientDictionary.ContainsKey(client.Number))
+                {
+                    clientDictionary[client.Number] = client;
+                }
             }
             return clientDictionary;
         }
-
-
-        public List<Employee> GenerateEmployee()
+        public List<Client> FindYoungerClients(List<Client> clients, int limitAge)
         {
-            var employees = new List<Employee>(1000);
-
-            for (int i = 0; i < 1000; i++)
-            {
-                var employee = new Employee();
-
-                employee.Name = GenerateRandomName();
-                employee.Surname = GenerateRandomSurname();
-                employee.Passport = GenerateRandomPassport();
-                employee.Number = GenerateRandomNumber();
-                employee.Contract = "Контракт подписан";
-
-                employees.Add(employee);
-            }
+            return clients.FindAll(client => client.Age < limitAge);
+        }
+        public List<Employee> GenerateEmployees()
+        {
+            var employees = new List<Employee>();
+            var faker = new Faker<Employee>("ru")
+                .RuleFor(c => c.Name, f => f.Name.FirstName())
+                .RuleFor(c => c.Surname, f => f.Name.LastName())
+                .RuleFor(e => e.Salary, f => f.Random.Int(25000, 50000));
+            employees.AddRange(faker.Generate(1000));
             return employees;
         }
-
-        public string GenerateRandomName()
+        public Employee FindEmployeeWithMinSalary(List<Employee> employees)
         {
-            string[] name = { "Иван", "Тимофей", "Владимир", "Мария", "Наталья" };
-            return name[_random.Next(name.Length)]; 
+            var employeeWithMinSalary = employees.MinBy(e => e.Salary);
+            return employeeWithMinSalary;
         }
-        public string GenerateRandomSurname()
-        {
-            string[] surname = { "Иванов", "Севцов", "Фёдоров", "Сырбу", "Грачёв" };
-            return surname[_random.Next(surname.Length)];
-        }
-        public int GenerateRandomPassport() 
-        {
-            return _random.Next(1000, 2000);
-        }
-        public int GenerateRandomNumber()
-        {
-            return _random.Next(3731000, 3732000);
-        }
-    }  
+    }
 }

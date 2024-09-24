@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="StopWatch" Version="1.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BankSystem.App\BankSystem.App.csproj" />
     <ProjectReference Include="..\BankSystem.Domain\BankSystem.Domain.csproj" />
   </ItemGroup>

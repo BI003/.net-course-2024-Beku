@@ -1,10 +1,12 @@
 ﻿using BankSystem.App.Services;
 using BankSystem.Domain.Models;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 
 internal class Program
 {
     private static void Main(string[] args)
-    {/*
+    {
         var employee = new Employee();
         employee.Name = "Иван";
         employee.Surname = "Беку";
@@ -29,14 +31,14 @@ internal class Program
         Console.WriteLine($"Владельцев: {bankService.NumberOwners}");
         Console.WriteLine($"Зарплата каждого владельца: {ownerSalary}");
 
-        var client = new Client();
-        client.Name = "Дмитрий";
-        client.Surname = "Дмитриевич";
-        client.Passport = 987654;
-        client.Number = 373898989;
-        Console.WriteLine($"Клиент банка: {client.Name}, {client.Surname}, {client.Passport}, {client.Number}");
+        var newclient = new Client();
+        newclient.Name = "Дмитрий";
+        newclient.Surname = "Дмитриевич";
+        newclient.Passport = 987654;
+        newclient.Number = 373898989;
+        Console.WriteLine($"Клиент банка: {newclient.Name}, {newclient.Surname}, {newclient.Passport}, {newclient.Number}");
         var newContract2 = " Клиент стал Сотрудником";
-        var newEmployee = BankService.ConvertClientInEmployee(client, newContract2);
+        var newEmployee = BankService.ConvertClientInEmployee(newclient, newContract2);
         Console.WriteLine($"Сотрудник: {newEmployee.Name}, {newEmployee.Surname}, Контракт: {newEmployee.Contract}");
 
         Console.ReadLine();
@@ -52,8 +54,72 @@ internal class Program
             currency.Price = price;
             Console.WriteLine("Свойства изменяются!");
         }
-        ЗДЕСЬ!!! */
 
-       
+        var generator = new TestDataGenerator();
+
+        var clients = generator.GenerateClients();
+        var clientDictionary = generator.GenerateClientsDictionary();
+        var employees = generator.GenerateEmployees();
+
+        Console.WriteLine("Поиск клиента по номеру");
+        var searchByNumber = 3731795;
+
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+        var foundClient = clients.FirstOrDefault(client => client.Number == searchByNumber);
+        if (foundClient != null)
+        {
+            Console.WriteLine($"Клиент найден в списке: {foundClient.Name} {foundClient.Surname}, Номер: {foundClient.Number}, Время поиска: {stopwatch.Elapsed} миллисекунд");
+        }
+        else
+        {
+            Console.WriteLine("Клиент не найден в списке.");
+        }
+        stopwatch.Reset();
+
+        stopwatch.Start();
+        var clientExists = clientDictionary.TryGetValue(searchByNumber, out var foundClient2);
+        if (clientExists && foundClient2 != null)
+        {
+            Console.WriteLine($"Клиент найден в словаре: {foundClient2.Name} {foundClient2.Surname}, Номер: {foundClient2.Number}, Время поиска по ключу: {stopwatch.Elapsed} миллисекунд");
+        }
+        else
+        {
+            Console.WriteLine("Клиент не найден в словаре.");
+        }
+        stopwatch.Reset();
+
+        stopwatch.Start();
+        var lastClientInDictionary = clientDictionary.Values.LastOrDefault();
+        if (lastClientInDictionary != null)
+        {
+            Console.WriteLine($"Последний клиент в словаре: {lastClientInDictionary.Name} {lastClientInDictionary.Surname}, Номер: {lastClientInDictionary.Number}, Время поиска последнего клиента: {stopwatch.Elapsed} миллисекунд");
+        }
+        else
+        {
+            Console.WriteLine("Словарь клиентов пуст.");
+        }
+        stopwatch.Stop();
+        
+        var limitAge = 19;
+        var youngClients = generator.FindYoungerClients(clients, limitAge);
+        Console.WriteLine($"Клиенты младше {limitAge} лет: {youngClients.Count} клиентов");
+        foreach (var client in youngClients)
+        {
+            Console.WriteLine($"{client.Name} {client.Surname}, Возраст: {client.Age}");
+        }
+
+        var employeeWithMinSalary = generator.FindEmployeeWithMinSalary(employees);
+        if (employeeWithMinSalary != null)
+        {
+            Console.WriteLine($"Сотрудник с минимальной зарплатой: {employeeWithMinSalary.Name} {employeeWithMinSalary.Surname}, Зарплата: {employeeWithMinSalary.Salary}");
+        }
+        else
+        {
+            Console.WriteLine("Сотрудники не найдены.");
+        }
     }
 }
+    
+
+
