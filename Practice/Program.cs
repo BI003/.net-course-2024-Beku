@@ -4,7 +4,7 @@ using BankSystem.Domain.Models;
 internal class Program
 {
     private static void Main(string[] args)
-    {
+    {/*
         var employee = new Employee();
         employee.Name = "Иван";
         employee.Surname = "Беку";
@@ -52,5 +52,8 @@ internal class Program
             currency.Price = price;
             Console.WriteLine("Свойства изменяются!");
         }
+        ЗДЕСЬ!!! */
+
+       
     }
 }
