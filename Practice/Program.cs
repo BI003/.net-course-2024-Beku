@@ -1,7 +1,6 @@
 ﻿using BankSystem.App.Services;
 using BankSystem.Domain.Models;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
 
 internal class Program
 {
