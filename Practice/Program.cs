@@ -1,5 +1,6 @@
 ﻿using BankSystem.App.Services;
 using BankSystem.Domain.Models;
+using System.Diagnostics;
 
 internal class Program
 {
@@ -9,7 +10,7 @@ internal class Program
         employee.Name = "Иван";
         employee.Surname = "Беку";
         employee.Passport = 123;
-        employee.Number = 37360125;
+        employee.PhoneNumber = 37360125;
         Console.WriteLine($"До: {employee.Contract}");
         var newContract = "Контракт создан!";
         CreateContract(employee, newContract);
@@ -29,14 +30,14 @@ internal class Program
         Console.WriteLine($"Владельцев: {bankService.NumberOwners}");
         Console.WriteLine($"Зарплата каждого владельца: {ownerSalary}");
 
-        var client = new Client();
-        client.Name = "Дмитрий";
-        client.Surname = "Дмитриевич";
-        client.Passport = 987654;
-        client.Number = 373898989;
-        Console.WriteLine($"Клиент банка: {client.Name}, {client.Surname}, {client.Passport}, {client.Number}");
+        var newclient = new Client();
+        newclient.Name = "Дмитрий";
+        newclient.Surname = "Дмитриевич";
+        newclient.Passport = 987654;
+        newclient.PhoneNumber = 373898989;
+        Console.WriteLine($"Клиент банка: {newclient.Name}, {newclient.Surname}, {newclient.Passport}, {newclient.PhoneNumber}");
         var newContract2 = " Клиент стал Сотрудником";
-        var newEmployee = BankService.ConvertClientInEmployee(client, newContract2);
+        var newEmployee = BankService.ConvertClientInEmployee(newclient, newContract2);
         Console.WriteLine($"Сотрудник: {newEmployee.Name}, {newEmployee.Surname}, Контракт: {newEmployee.Contract}");
 
         Console.ReadLine();
@@ -52,5 +53,71 @@ internal class Program
             currency.Price = price;
             Console.WriteLine("Свойства изменяются!");
         }
+
+        var generator = new TestDataGenerator();
+        var clients = generator.GenerateClients();
+        var clientDictionary = generator.GenerateClientsDictionaryFromList(clients);
+        var employees = generator.GenerateEmployees();
+
+        var searchByNumber = 3731111;
+        var iterations = 1000;
+
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+        for (int i = 0; i < iterations; i++)
+        {
+            var foundClient = clients.FirstOrDefault(client => client.PhoneNumber == searchByNumber);
+        }
+        stopwatch.Stop();
+        long listSearchTime = stopwatch.ElapsedMilliseconds; 
+        Console.WriteLine($"Время поиска в списке: {listSearchTime} миллисекунд");
+
+        stopwatch.Reset();
+        stopwatch.Start(); 
+        for (int i = 0; i < iterations; i++)
+        {
+            var clientExists = clientDictionary.TryGetValue(searchByNumber, out var foundClient2);
+        }
+        stopwatch.Stop(); 
+        long dictionarySearchTime = stopwatch.ElapsedMilliseconds; 
+        Console.WriteLine($"Время поиска в словаре: {dictionarySearchTime} миллисекунд");
+
+        var limitAge = 19;
+        var youngClients = bankService.FindYoungerClients(clients, limitAge);
+        Console.WriteLine($"Клиенты младше {limitAge} лет: {youngClients.Count} клиентов");
+
+        var employeeWithMinSalary = generator.FindEmployeeWithMinSalary(employees);
+        if (employeeWithMinSalary != null)
+        {
+            Console.WriteLine($"Сотрудник с минимальной зарплатой: {employeeWithMinSalary.Name} {employeeWithMinSalary.Surname}, Зарплата: {employeeWithMinSalary.Salary}");
+        }
+        else
+        {
+            Console.WriteLine("Сотрудники не найдены.");
+        }
+
+        stopwatch.Reset(); 
+        stopwatch.Start(); 
+        for (int i = 0; i < iterations; i++)
+        {
+            var lastClientInDictionary = clientDictionary.Values.LastOrDefault();
+        }
+        stopwatch.Stop(); 
+        long lastOrDefaultSearchTime = stopwatch.ElapsedMilliseconds; 
+        Console.WriteLine($"Время поиска последнего клиента через LastOrDefault: {lastOrDefaultSearchTime} миллисекунд");
+
+        stopwatch.Reset(); 
+        stopwatch.Start(); 
+        for (int i = 0; i < iterations; i++)
+        {
+            var lastClientKey = clientDictionary.Keys.LastOrDefault();
+            var foundLastClientByKey = clientDictionary[lastClientKey];
+        }
+        stopwatch.Stop(); 
+        long keySearchTime = stopwatch.ElapsedMilliseconds; 
+        Console.WriteLine($"Время поиска последнего клиента по ключу: {keySearchTime} миллисекунд");
     }
 }
+
+
+

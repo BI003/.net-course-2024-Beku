@@ -2,6 +2,6 @@
 {
     public class Client : Person
     {
-       
+       public int Age { get; set; }
     }
 }
