@@ -10,7 +10,7 @@ internal class Program
         employee.Name = "Иван";
         employee.Surname = "Беку";
         employee.Passport = 123;
-        employee.Number = 37360125;
+        employee.PhoneNumber = 37360125;
         Console.WriteLine($"До: {employee.Contract}");
         var newContract = "Контракт создан!";
         CreateContract(employee, newContract);
@@ -34,8 +34,8 @@ internal class Program
         newclient.Name = "Дмитрий";
         newclient.Surname = "Дмитриевич";
         newclient.Passport = 987654;
-        newclient.Number = 373898989;
-        Console.WriteLine($"Клиент банка: {newclient.Name}, {newclient.Surname}, {newclient.Passport}, {newclient.Number}");
+        newclient.PhoneNumber = 373898989;
+        Console.WriteLine($"Клиент банка: {newclient.Name}, {newclient.Surname}, {newclient.Passport}, {newclient.PhoneNumber}");
         var newContract2 = " Клиент стал Сотрудником";
         var newEmployee = BankService.ConvertClientInEmployee(newclient, newContract2);
         Console.WriteLine($"Сотрудник: {newEmployee.Name}, {newEmployee.Surname}, Контракт: {newEmployee.Contract}");
@@ -55,58 +55,36 @@ internal class Program
         }
 
         var generator = new TestDataGenerator();
-
         var clients = generator.GenerateClients();
-        var clientDictionary = generator.GenerateClientsDictionary();
+        var clientDictionary = generator.GenerateClientsDictionaryFromList(clients);
         var employees = generator.GenerateEmployees();
 
-        Console.WriteLine("Поиск клиента по номеру");
-        var searchByNumber = 3731795;
+        var searchByNumber = 3731111;
+        var iterations = 1000;
 
         var stopwatch = new Stopwatch();
         stopwatch.Start();
-        var foundClient = clients.FirstOrDefault(client => client.Number == searchByNumber);
-        if (foundClient != null)
+        for (int i = 0; i < iterations; i++)
         {
-            Console.WriteLine($"Клиент найден в списке: {foundClient.Name} {foundClient.Surname}, Номер: {foundClient.Number}, Время поиска: {stopwatch.Elapsed} миллисекунд");
-        }
-        else
-        {
-            Console.WriteLine("Клиент не найден в списке.");
-        }
-        stopwatch.Reset();
-
-        stopwatch.Start();
-        var clientExists = clientDictionary.TryGetValue(searchByNumber, out var foundClient2);
-        if (clientExists && foundClient2 != null)
-        {
-            Console.WriteLine($"Клиент найден в словаре: {foundClient2.Name} {foundClient2.Surname}, Номер: {foundClient2.Number}, Время поиска по ключу: {stopwatch.Elapsed} миллисекунд");
-        }
-        else
-        {
-            Console.WriteLine("Клиент не найден в словаре.");
-        }
-        stopwatch.Reset();
-
-        stopwatch.Start();
-        var lastClientInDictionary = clientDictionary.Values.LastOrDefault();
-        if (lastClientInDictionary != null)
-        {
-            Console.WriteLine($"Последний клиент в словаре: {lastClientInDictionary.Name} {lastClientInDictionary.Surname}, Номер: {lastClientInDictionary.Number}, Время поиска последнего клиента: {stopwatch.Elapsed} миллисекунд");
-        }
-        else
-        {
-            Console.WriteLine("Словарь клиентов пуст.");
+            var foundClient = clients.FirstOrDefault(client => client.PhoneNumber == searchByNumber);
         }
         stopwatch.Stop();
-        
-        var limitAge = 19;
-        var youngClients = generator.FindYoungerClients(clients, limitAge);
-        Console.WriteLine($"Клиенты младше {limitAge} лет: {youngClients.Count} клиентов");
-        foreach (var client in youngClients)
+        long listSearchTime = stopwatch.ElapsedMilliseconds; 
+        Console.WriteLine($"Время поиска в списке: {listSearchTime} миллисекунд");
+
+        stopwatch.Reset();
+        stopwatch.Start(); 
+        for (int i = 0; i < iterations; i++)
         {
-            Console.WriteLine($"{client.Name} {client.Surname}, Возраст: {client.Age}");
+            var clientExists = clientDictionary.TryGetValue(searchByNumber, out var foundClient2);
         }
+        stopwatch.Stop(); 
+        long dictionarySearchTime = stopwatch.ElapsedMilliseconds; 
+        Console.WriteLine($"Время поиска в словаре: {dictionarySearchTime} миллисекунд");
+
+        var limitAge = 19;
+        var youngClients = bankService.FindYoungerClients(clients, limitAge);
+        Console.WriteLine($"Клиенты младше {limitAge} лет: {youngClients.Count} клиентов");
 
         var employeeWithMinSalary = generator.FindEmployeeWithMinSalary(employees);
         if (employeeWithMinSalary != null)
@@ -117,8 +95,29 @@ internal class Program
         {
             Console.WriteLine("Сотрудники не найдены.");
         }
+
+        stopwatch.Reset(); 
+        stopwatch.Start(); 
+        for (int i = 0; i < iterations; i++)
+        {
+            var lastClientInDictionary = clientDictionary.Values.LastOrDefault();
+        }
+        stopwatch.Stop(); 
+        long lastOrDefaultSearchTime = stopwatch.ElapsedMilliseconds; 
+        Console.WriteLine($"Время поиска последнего клиента через LastOrDefault: {lastOrDefaultSearchTime} миллисекунд");
+
+        stopwatch.Reset(); 
+        stopwatch.Start(); 
+        for (int i = 0; i < iterations; i++)
+        {
+            var lastClientKey = clientDictionary.Keys.LastOrDefault();
+            var foundLastClientByKey = clientDictionary[lastClientKey];
+        }
+        stopwatch.Stop(); 
+        long keySearchTime = stopwatch.ElapsedMilliseconds; 
+        Console.WriteLine($"Время поиска последнего клиента по ключу: {keySearchTime} миллисекунд");
     }
 }
-    
+
 
 
