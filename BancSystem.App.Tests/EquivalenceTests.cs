@@ -20,10 +20,31 @@ namespace BancSystem.App.Tests
             };
 
             // Act
-            bool existingAccount = clientAndAccount.ContainsKey(existingClient);
+            bool clientExists = clientAndAccount.ContainsKey(existingClient);
 
             // Assert
-            Assert.Equal(existingAccount, true);
+            Assert.Equal(clientExists, true);
+        }
+
+        [Fact]
+        public void GenerateEmployees_EmployeeAlreadyExists_True()
+        {
+            // Arrange
+            var generator = new TestDataGenerator();
+            var employees = generator.GenerateEmployees();
+
+            var existingEmployee = new Employee()
+            {
+                Name = employees.First().Name,
+                Surname = employees.First().Surname,
+                Contract = employees.First().Contract,
+            };
+
+            // Act
+            bool employeeExists = employees.Contains(existingEmployee);
+
+            // Assert
+            Assert.Equal(employeeExists, true);
         }
     }
 }

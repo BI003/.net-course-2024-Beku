@@ -79,4 +79,23 @@ public class TestDataGenerator
         }
         return clientsAndAccounts;
     }
+
+    public List<Employee> GenerateEmployeeClientsAndAccounts()
+    {
+        var employees = new List<Employee>();
+        var faker = new Faker<Employee>("ru")
+            .RuleFor(e => e.Name, f => f.Name.FirstName())
+            .RuleFor(e => e.Surname, f => f.Name.LastName())
+            .RuleFor(e => e.Contract, f => f.Random.AlphaNumeric(10)); 
+
+        while (employees.Count < 1000)
+        {
+            var employee = faker.Generate();
+            if (!employees.Any(e => e.Name == employee.Name && e.Surname == employee.Surname && e.Contract == employee.Contract))
+            {
+                employees.Add(employee);
+            }
+        }
+        return employees;
+    }
 }
