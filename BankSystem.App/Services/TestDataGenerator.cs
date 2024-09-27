@@ -51,11 +51,24 @@ public class TestDataGenerator
 
     public Dictionary<Client, Account> GenerateDictionaryClientsAndAccounts()
     {
-        var clientsAndAccount = new Dictionary<Client, Account>();
-        var faker = new Faker<Client>("ru")
+        var clientsAndAccounts = new Dictionary<Client, Account>();
+        var fakerClient = new Faker<Client>("ru")
             .RuleFor(c => c.Name, f => f.Name.FirstName())
-            .RuleFor(c => c.Surname, f => f.Name.LastName())
-            .RuleFor(c => c.PhoneNumber, f => int.Parse(f.Phone.PhoneNumber("373####")));
-        return clientsAndAccount;
+            .RuleFor(c => c.Surname, f => f.Name.LastName());
+
+        var fakerAccount = new Faker<Account>()
+            .RuleFor(a => a.Currency, f => f.Finance.Currency().Code)
+            .RuleFor(a => a.Amount, f => f.Finance.Amount(1000, 100000));
+
+        while (clientsAndAccounts.Count < 1000)
+        {
+            var client = fakerClient.Generate();
+            if (!clientsAndAccounts.ContainsKey(client))
+            {
+                var account = fakerAccount.Generate();
+                clientsAndAccounts.Add(client, account);
+            }
+        }
+        return clientsAndAccounts;
     }
 }

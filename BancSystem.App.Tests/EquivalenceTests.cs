@@ -1,12 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BankSystem.App.Services;
+using BankSystem.Domain.Models;
+using Xunit;
 
 namespace BancSystem.App.Tests
 {
-    internal class EquivalenceTests
+    public class EquivalenceTests
     {
+        [Fact]
+        public void GetHashCodeNecessityPositivTest()
+        {
+            // Arrange
+            var generator = new TestDataGenerator();
+
+            var clientAndAccount = generator.GenerateDictionaryClientsAndAccounts();
+
+            var existingClient = new Client()
+            {
+                Name = clientAndAccount.Keys.First().Name,
+                Surname = clientAndAccount.Keys.First().Surname,
+            };
+
+            // Act
+            bool existingAccount = clientAndAccount.ContainsKey(existingClient);
+
+            // Assert
+            Assert.Equal(existingAccount, false);
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace BankSystem.Domain.Models
 {
     public class Account
     {
-        public int Currency { get; set; }
-        public int Amount {  get; set; }
+        public string Currency { get; set; }
+        public decimal Amount {  get; set; }
     }
 }
