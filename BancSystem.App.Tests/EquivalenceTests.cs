@@ -24,7 +24,9 @@ namespace BancSystem.App.Tests
             bool existingAccount = clientAndAccount.ContainsKey(existingClient);
 
             // Assert
-            Assert.Equal(existingAccount, false);
+            Assert.Equal(existingAccount, true);
         }
+
+       
     }
 }
