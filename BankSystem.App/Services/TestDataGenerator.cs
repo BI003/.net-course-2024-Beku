@@ -49,9 +49,9 @@ public class TestDataGenerator
         return employeeWithMinSalary;
     }
 
-    public Dictionary<Client, Account> GenerateDictionaryClientsAndAccounts()
+    public Dictionary<Client, List<Account>> GenerateDictionaryClientsAndAccounts()
     {
-        var clientsAndAccounts = new Dictionary<Client, Account>();
+        var clientsAndAccounts = new Dictionary<Client, List<Account>>();
         var fakerClient = new Faker<Client>("ru")
             .RuleFor(c => c.Name, f => f.Name.FirstName())
             .RuleFor(c => c.Surname, f => f.Name.LastName());
@@ -63,10 +63,18 @@ public class TestDataGenerator
         while (clientsAndAccounts.Count < 1000)
         {
             var client = fakerClient.Generate();
-            if (!clientsAndAccounts.ContainsKey(client))
+
+            var accountList = new List<Account>();
+            int accountCount = new Random().Next(1, 4); 
+            for (int i = 0; i < accountCount; i++)
             {
                 var account = fakerAccount.Generate();
-                clientsAndAccounts.Add(client, account);
+                accountList.Add(account);
+            }
+
+            if (!clientsAndAccounts.ContainsKey(client))
+            {
+                clientsAndAccounts.Add(client, accountList); 
             }
         }
         return clientsAndAccounts;

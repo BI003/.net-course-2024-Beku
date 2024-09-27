@@ -11,7 +11,6 @@ namespace BancSystem.App.Tests
         {
             // Arrange
             var generator = new TestDataGenerator();
-
             var clientAndAccount = generator.GenerateDictionaryClientsAndAccounts();
 
             var existingClient = new Client()
@@ -26,7 +25,5 @@ namespace BancSystem.App.Tests
             // Assert
             Assert.Equal(existingAccount, true);
         }
-
-       
     }
 }
