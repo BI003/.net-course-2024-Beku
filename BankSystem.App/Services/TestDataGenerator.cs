@@ -48,4 +48,14 @@ public class TestDataGenerator
         var employeeWithMinSalary = employees.MinBy(e => e.Salary);
         return employeeWithMinSalary;
     }
+
+    public Dictionary<Client, Account> GenerateDictionaryClientsAndAccounts()
+    {
+        var clientsAndAccount = new Dictionary<Client, Account>();
+        var faker = new Faker<Client>("ru")
+            .RuleFor(c => c.Name, f => f.Name.FirstName())
+            .RuleFor(c => c.Surname, f => f.Name.LastName())
+            .RuleFor(c => c.PhoneNumber, f => int.Parse(f.Phone.PhoneNumber("373####")));
+        return clientsAndAccount;
+    }
 }
