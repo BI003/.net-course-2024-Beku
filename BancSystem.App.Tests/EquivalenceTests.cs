@@ -13,10 +13,15 @@ namespace BancSystem.App.Tests
             var generator = new TestDataGenerator();
             var clientAndAccount = generator.GenerateDictionaryClientsAndAccounts();
 
+            var firstClient = clientAndAccount.Keys.First();
+
             var existingClient = new Client()
             {
-                Name = clientAndAccount.Keys.First().Name,
-                Surname = clientAndAccount.Keys.First().Surname,
+                Name = firstClient.Name,
+                Surname = firstClient.Surname,
+                Age = firstClient.Age,
+                PhoneNumber = firstClient.PhoneNumber,
+                Passport = firstClient.Passport,
             };
 
             // Act
@@ -33,11 +38,15 @@ namespace BancSystem.App.Tests
             var generator = new TestDataGenerator();
             var employees = generator.GenerateEmployees();
 
+            var firstEmployee = employees.First();
+
             var existingEmployee = new Employee()
             {
-                Name = employees.First().Name,
-                Surname = employees.First().Surname,
-                Contract = employees.First().Contract,
+                Name = firstEmployee.Name,
+                Surname = firstEmployee.Surname,
+                Contract = firstEmployee.Contract,
+                Salary = firstEmployee.Salary,
+                Passport = firstEmployee.Passport,
             };
 
             // Act

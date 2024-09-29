@@ -8,14 +8,17 @@
         {
             if (obj is Client other)
             {
-                return this.Name == other.Name && this.Surname == other.Surname;
+                return this.Name == other.Name &&
+                       this.Surname == other.Surname &&
+                       this.Age == other.Age &&    
+                       this.Passport == other.Passport;
             }
             return false;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Name, Surname);
+            return HashCode.Combine(Name, Surname, Age, Passport);
         }
     }
 }
