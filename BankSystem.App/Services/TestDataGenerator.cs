@@ -59,10 +59,12 @@ public class TestDataGenerator
             .RuleFor(c => c.Age, f => f.Random.Int(18, 50));
 
         var fakerAccount = new Faker<Account>()
-       .RuleFor(a => a.Currency, f => f.Finance.Currency().Code) 
+       .RuleFor(a => a.Currency, f => new Currency
+       {
+           Name = f.Finance.Currency().Code,
+           Code = f.Finance.Currency().Code,
+       })
        .RuleFor(a => a.Amount, f => f.Finance.Amount(10000, 100000));
-
-
 
         while (clientsAndAccounts.Count < 1000)
         {
