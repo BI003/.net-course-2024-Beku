@@ -11,6 +11,7 @@
             {
                 return this.Name == other.Name &&
                        this.Surname == other.Surname &&
+                       this.Age == other.Age &&
                        this.Contract == other.Contract &&
                        this.Salary == other.Salary &&
                        this.Passport == other.Passport;
