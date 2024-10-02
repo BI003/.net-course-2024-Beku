@@ -18,7 +18,15 @@ namespace BankSystem.Data.Storages
                 _clients.Add(client);
             }   
         }
-       
+
+        public void AddRange(IEnumerable<Client> clients)
+        {
+            foreach (var client in clients)
+            {
+                AddClient(client);
+            }
+        }
+
         public Client GetYoungestClient()
         {
             return _clients.OrderBy(c => c.Age).FirstOrDefault();

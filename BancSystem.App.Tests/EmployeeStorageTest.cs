@@ -18,10 +18,7 @@ namespace BancSystem.App.Tests
                 new Employee { Name = "Николай", Surname = "Федоров", Passport = 789123, Age = 35, Contract = "C005", Salary = 60000 }
             };
 
-            foreach (var employee in employees)
-            {
-                storage.AddEmployee(employee);
-            }
+            storage.AddRange(employees);
             return storage;
         }
 
@@ -40,10 +37,7 @@ namespace BancSystem.App.Tests
             };
 
             // Act
-            foreach (var employee in employees)
-            {
-                storage.AddEmployee(employee);
-            }
+            storage.AddRange(employees);
 
             // Assert
             Assert.Equal(5, storage.GetAllEmployees().Count());

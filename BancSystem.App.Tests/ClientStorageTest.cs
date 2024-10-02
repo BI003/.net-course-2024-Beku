@@ -18,10 +18,8 @@ namespace BancSystem.App.Tests
                 new Client { Name = "Никита", Surname = "Махов", Passport = 789123, Age = 55 }
             };
 
-            foreach (var client in clients)
-            {
-                storage.AddClient(client);
-            }
+            storage.AddRange(clients);
+            
             return storage;
         }
 
@@ -40,10 +38,7 @@ namespace BancSystem.App.Tests
             };
 
             // Act
-            foreach (var client in clients)
-            {
-                storage.AddClient(client);
-            }
+            storage.AddRange(clients);
 
             // Assert
             Assert.Equal(5, storage.GetAllClients().Count());

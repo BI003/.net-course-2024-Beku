@@ -19,6 +19,14 @@ namespace BankSystem.Data.Storages
             }
         }
 
+        public void AddRange(IEnumerable<Employee> employees)
+        {
+            foreach (var employee in employees)
+            {
+                AddEmployee(employee);
+            }
+        }
+
         public Employee GetYoungestEmployee()
         {
             return _employees.OrderBy(e => e.Age).FirstOrDefault();
