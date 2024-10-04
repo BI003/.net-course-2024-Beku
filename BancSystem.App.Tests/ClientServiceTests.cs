@@ -62,7 +62,7 @@ namespace BancSystem.App.Tests
                 Name = "Alice",
                 Surname = "Smith",
                 Age = 30,
-                Passport = 0, // No passport
+                Passport = 0, 
                 PhoneNumber = 373123456,
                 DateOfBirth = new DateTime(1994, 1, 1)
             };
@@ -82,7 +82,7 @@ namespace BancSystem.App.Tests
             {
                 Name = "Alice",
                 Surname = "Smith",
-                Age = 17, // Underage
+                Age = 17, 
                 Passport = 789123,
                 PhoneNumber = 373852147,
                 DateOfBirth = new DateTime(2006, 1, 1)
@@ -99,7 +99,7 @@ namespace BancSystem.App.Tests
         public void AddAdditionalAccount_ClientNotFound_ShouldThrowException()
         {
             // Arrange
-            var passport = 123999; // Non-existing passport
+            var passport = 123999; 
             var newAccount = new Account
             {
                 Currency = new Currency { Code = "USD", Name = "Dollar" },

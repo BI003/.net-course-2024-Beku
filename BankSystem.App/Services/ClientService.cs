@@ -101,7 +101,5 @@ namespace BankSystem.App.Services
             }
             return clients;
         }
-
-        
     }
 }
