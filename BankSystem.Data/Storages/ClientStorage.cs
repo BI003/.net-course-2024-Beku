@@ -4,18 +4,18 @@ namespace BankSystem.Data.Storages
 {
     public class ClientStorage 
     {
-        private List<Client> _clients;
+        private Dictionary<int, Client> _clients;
 
         public ClientStorage() 
         {
-            _clients = new List<Client>();
+            _clients = new Dictionary<int, Client>();
         }
 
         public void AddClient(Client client)
         {
-            if(!_clients.Contains(client))
+            if (!_clients.ContainsKey(client.Passport))
             {
-                _clients.Add(client);
+                _clients.Add(client.Passport, client);
             }   
         }
 
@@ -29,22 +29,22 @@ namespace BankSystem.Data.Storages
 
         public Client GetYoungestClient()
         {
-            return _clients.OrderBy(c => c.Age).FirstOrDefault();
+            return _clients.Values.OrderBy(c => c.Age).FirstOrDefault();
         }
 
         public Client GetOldestClient()
         {
-            return _clients.OrderByDescending(c => c.Age).FirstOrDefault();
+            return _clients.Values.OrderByDescending(c => c.Age).FirstOrDefault();
         }
 
         public double GetAverageAge()
         {
-            return _clients.Average(c => c.Age);
+            return _clients.Values.Average(c => c.Age);
         }
 
         public IEnumerable<Client> GetAllClients()
         {
-            return _clients.AsEnumerable();
+            return _clients.Values.AsEnumerable();
         }
     }
 }
