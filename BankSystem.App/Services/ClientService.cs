@@ -71,7 +71,7 @@ namespace BankSystem.App.Services
                 throw new Exception("Клиент не найден!");
             }
 
-            if (!client.Accounts.TryGetValue(currencyCode, out var accountList))
+            if (!client.Accounts.TryGetValue(currencyCode, out var accountList) || accountList == null || !accountList.Any())
             {
                 throw new Exception($"Счета в валюте {currencyCode} не найдены.");
             }
@@ -86,7 +86,7 @@ namespace BankSystem.App.Services
             account.Amount = newAmount;
         }
 
-        public IEnumerable<Client> GetFilteredClients(string name = null, string surname = null, int? passport = null, string phoneNumber = null, DateTime? dateOfBirthFrom = null, DateTime? dateOfBirthTo = null)
+        public IEnumerable<Client> GetFilteredClients(string name = null, string surname = null, int? passport = null, int? phoneNumber = null, DateTime? dateOfBirthFrom = null, DateTime? dateOfBirthTo = null)
         {
             var clients = _clientStorage.GetAllClients();
 
@@ -105,9 +105,9 @@ namespace BankSystem.App.Services
                 clients = clients.Where(c => c.Passport == passport.Value);
             }
 
-            if (!string.IsNullOrWhiteSpace(phoneNumber))
+            if (phoneNumber.HasValue)
             {
-                clients = clients.Where(c => c.PhoneNumber == phoneNumber);
+                clients = clients.Where(c => c.PhoneNumber == phoneNumber.Value);
             }
 
             if (dateOfBirthFrom.HasValue)
