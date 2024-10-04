@@ -24,8 +24,13 @@ namespace BankSystem.App.Services
             {
                 throw new UnderageClientException("Клиент не может быть моложе 18 лет!");
             }
-            _clientStorage.AddClient(client);
 
+            _clientStorage.AddClient(client);
+            AddDefaultAccount(client);
+        }
+
+        private void AddDefaultAccount(Client client)
+        {
             var defaultCurrency = new Currency()
             {
                 Code = "USD",
@@ -35,31 +40,14 @@ namespace BankSystem.App.Services
             var defaultAccount = new Account()
             {
                 Currency = defaultCurrency,
-                Amount = 0 
+                Amount = 0
             };
 
             if (!client.Accounts.ContainsKey(defaultCurrency.Code))
             {
-                client.Accounts[defaultCurrency.Code] = new List<Account>(); 
+                client.Accounts[defaultCurrency.Code] = new List<Account>();
             }
             client.Accounts[defaultCurrency.Code].Add(defaultAccount);
-        }
-
-        public void AddAdditionalAccount(int passport, Account newAccount)
-        {
-            var client = _clientStorage.GetAllClients().FirstOrDefault(c => c.Passport == passport);
-
-            if (client == null)
-            {
-                throw new Exception("Клиент не найден!"); 
-            }
-
-            if (!client.Accounts.ContainsKey(newAccount.Currency.Code))
-            {
-                client.Accounts[newAccount.Currency.Code] = new List<Account>(); 
-            }
-
-            client.Accounts[newAccount.Currency.Code].Add(newAccount);
         }
 
         public void EditAccount(int passport, string currencyCode, decimal newAmount)
@@ -86,41 +74,34 @@ namespace BankSystem.App.Services
             account.Amount = newAmount;
         }
 
-        public IEnumerable<Client> GetFilteredClients(string name = null, string surname = null, int? passport = null, int? phoneNumber = null, DateTime? dateOfBirthFrom = null, DateTime? dateOfBirthTo = null)
+        public void AddAdditionalAccount(int passport, Account newAccount)
+        {
+            var client = _clientStorage.GetAllClients().FirstOrDefault(c => c.Passport == passport);
+
+            if (client == null)
+            {
+                throw new Exception("Клиент не найден!");
+            }
+
+            if (!client.Accounts.ContainsKey(newAccount.Currency.Code))
+            {
+                client.Accounts[newAccount.Currency.Code] = new List<Account>();
+            }
+
+            client.Accounts[newAccount.Currency.Code].Add(newAccount);
+        }
+
+        public IEnumerable<Client> GetFilteredClients(Func<Client, bool> filter = null)
         {
             var clients = _clientStorage.GetAllClients();
 
-            if (!string.IsNullOrWhiteSpace(name))
+            if (filter != null)
             {
-                clients = clients.Where(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                clients = clients.Where(filter);
             }
-
-            if (!string.IsNullOrWhiteSpace(surname))
-            {
-                clients = clients.Where(c => c.Surname.Equals(surname, StringComparison.OrdinalIgnoreCase));
-            }
-
-            if (passport.HasValue)
-            {
-                clients = clients.Where(c => c.Passport == passport.Value);
-            }
-
-            if (phoneNumber.HasValue)
-            {
-                clients = clients.Where(c => c.PhoneNumber == phoneNumber.Value);
-            }
-
-            if (dateOfBirthFrom.HasValue)
-            {
-                clients = clients.Where(c => c.DateOfBirth >= dateOfBirthFrom.Value);
-            }
-
-            if (dateOfBirthTo.HasValue)
-            {
-                clients = clients.Where(c => c.DateOfBirth <= dateOfBirthTo.Value);
-            }
-
             return clients;
         }
+
+        
     }
 }

@@ -137,11 +137,31 @@ namespace BancSystem.App.Tests
         public void GetFilteredClients_WithValidName_ShouldReturnClients()
         {
             // Act
-            var result = _clientService.GetFilteredClients(name: "John");
+            var result = _clientService.GetFilteredClients(c => c.Name == "John");
 
             // Assert
             Assert.Single(result);
             Assert.Equal("John", result.First().Name);
+        }
+
+        [Fact]
+        public void GetFilteredClients_WithValidSurname_ShouldReturnClients()
+        {
+            // Act
+            var result = _clientService.GetFilteredClients(c => c.Surname == "Doe");
+
+            // Assert
+            Assert.Equal(2, result.Count());
+        }
+
+        [Fact]
+        public void GetFilteredClients_WithNonExistentName_ShouldReturnNoClients()
+        {
+            // Act
+            var result = _clientService.GetFilteredClients(c => c.Name == "NonExistentName");
+
+            // Assert
+            Assert.Empty(result);
         }
     }
 }
