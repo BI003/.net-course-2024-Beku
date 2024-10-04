@@ -12,11 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BankSystem.Data\BankSystem.Data.csproj" />
     <ProjectReference Include="..\BankSystem.Domain\BankSystem.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Exceptions\" />
   </ItemGroup>
 
 </Project>

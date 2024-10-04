@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BankSystem.Data.Storages;
 
 namespace BankSystem.App.Services
 {
-    internal class EmployeeService
+    public class EmployeeService
     {
+        private readonly EmployeeStorage _employeeStorage;
+
+        public EmployeeService(EmployeeStorage employeeStorage)
+        {
+            _employeeStorage = employeeStorage;
+        }
     }
 }
