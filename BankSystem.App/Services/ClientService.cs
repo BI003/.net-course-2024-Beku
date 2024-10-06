@@ -24,12 +24,12 @@ namespace BankSystem.App.Services
             {
                 throw new UnderageClientException("Клиент не может быть моложе 18 лет!");
             }
-
-            _clientStorage.AddClient(client);
-            AddDefaultAccount(client);
+            
+                _clientStorage.AddClient(client);
+                AddDefaultAccount(client.Passport); 
         }
 
-        private void AddDefaultAccount(Client client)
+        private void AddDefaultAccount(int passport)
         {
             var defaultCurrency = new Currency()
             {
@@ -43,11 +43,7 @@ namespace BankSystem.App.Services
                 Amount = 0
             };
 
-            if (!client.Accounts.ContainsKey(defaultCurrency.Code))
-            {
-                client.Accounts[defaultCurrency.Code] = new List<Account>();
-            }
-            client.Accounts[defaultCurrency.Code].Add(defaultAccount);
+            _clientStorage.AddAccountToClient(passport, defaultAccount);
         }
 
         public void EditAccount(int passport, string currencyCode, decimal newAmount)
