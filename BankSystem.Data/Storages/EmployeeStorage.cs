@@ -13,9 +13,43 @@ namespace BankSystem.Data.Storages
 
         public void AddEmployee(Employee employee)
         {
-            if (!_employees.ContainsKey(employee.Passport))
+            if (!EmployeeExists(employee.Passport))
             {
                 _employees.Add(employee.Passport, employee);
+            }
+            else
+            {
+                throw new Exception("Сотрудник с таким паспортом уже существует.");
+            }
+        }
+
+        public bool EmployeeExists(int passport)
+        {
+            return _employees.ContainsKey(passport);
+        }
+
+        public Employee GetEmployeeByPassport(int passport)
+        {
+            if (_employees.TryGetValue(passport, out var employee))
+            {
+                return employee;
+            }
+            throw new Exception("Сотрудник не найден!");
+        }
+
+        public void AddAccountToEmployee(int passport, Account account)
+        {
+            if (_employees.TryGetValue(passport, out var employee))
+            {
+                if (!employee.Accounts.ContainsKey(account.Currency.Code))
+                {
+                    employee.Accounts[account.Currency.Code] = new List<Account>();
+                }
+                employee.Accounts[account.Currency.Code].Add(account);
+            }
+            else
+            {
+                throw new Exception("Сотрудник не найден!");
             }
         }
 

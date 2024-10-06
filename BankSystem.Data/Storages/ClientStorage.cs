@@ -11,11 +11,6 @@ namespace BankSystem.Data.Storages
             _clients = new Dictionary<int, Client>();
         }
 
-        public bool ClientExists(int passport)
-        {
-            return _clients.ContainsKey(passport);
-        }
-
         public void AddClient(Client client)
         {
             if (!ClientExists(client.Passport))
@@ -26,6 +21,11 @@ namespace BankSystem.Data.Storages
             {
                 throw new Exception("Клиент с таким паспортом уже существует.");
             }
+        }
+
+        public bool ClientExists(int passport)
+        {
+            return _clients.ContainsKey(passport);
         }
 
         public void AddAccountToClient(int passport, Account account)

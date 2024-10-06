@@ -25,11 +25,16 @@ namespace BankSystem.App.Services
                 throw new UnderageClientException("Сотрудник не может быть моложе 18 лет!");
             }
 
+            if (_employeeStorage.EmployeeExists(employee.Passport))
+            {
+                throw new Exception("Сотрудник с таким паспортом уже существует.");
+            }
+
             _employeeStorage.AddEmployee(employee);
-            AddDefaultAccount(employee);
+            AddDefaultAccount(employee.Passport);
         }
 
-        private void AddDefaultAccount(Employee employee)
+        private void AddDefaultAccount(int passport)
         {
             var defaultCurrency = new Currency()
             {
@@ -43,16 +48,12 @@ namespace BankSystem.App.Services
                 Amount = 0
             };
 
-            if (!employee.Accounts.ContainsKey(defaultCurrency.Code))
-            {
-                employee.Accounts[defaultCurrency.Code] = new List<Account>();
-            }
-            employee.Accounts[defaultCurrency.Code].Add(defaultAccount);
+            _employeeStorage.AddAccountToEmployee(passport, defaultAccount);
         }
 
         public void EditSalary(int passport, int newSalary)
         {
-            var employee = _employeeStorage.GetAllEmployees().FirstOrDefault(e => e.Passport == passport);
+            var employee = _employeeStorage.GetEmployeeByPassport(passport);
 
             if (employee == null)
             {
@@ -64,7 +65,7 @@ namespace BankSystem.App.Services
 
         public void EditAccount(int passport, string currencyCode, decimal newAmount)
         {
-            var employee = _employeeStorage.GetAllEmployees().FirstOrDefault(e => e.Passport == passport);
+            var employee = _employeeStorage.GetEmployeeByPassport(passport);
 
             if (employee == null)
             {
@@ -88,7 +89,7 @@ namespace BankSystem.App.Services
 
         public void AddAdditionalAccount(int passport, Account newAccount)
         {
-            var employee = _employeeStorage.GetAllEmployees().FirstOrDefault(e => e.Passport == passport);
+            var employee = _employeeStorage.GetEmployeeByPassport(passport);
 
             if (employee == null)
             {
