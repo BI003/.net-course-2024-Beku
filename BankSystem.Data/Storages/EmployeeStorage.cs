@@ -63,17 +63,46 @@ namespace BankSystem.Data.Storages
 
         public Employee GetYoungestEmployee()
         {
-            return _employees.Values.OrderBy(e => e.Age).FirstOrDefault();
+            Employee youngestEmployee = null;
+
+            foreach (var employee in _employees.Values)
+            {
+                if (youngestEmployee == null || employee.Age < youngestEmployee.Age)
+                {
+                    youngestEmployee = employee;
+                }
+            }
+            return youngestEmployee;
         }
+
 
         public Employee GetOldestEmployee()
         {
-            return _employees.Values.OrderByDescending(e => e.Age).FirstOrDefault();
+            Employee oldestEmployee = null;
+
+            foreach (var employee in _employees.Values)
+            {
+                if (oldestEmployee == null || employee.Age > oldestEmployee.Age)
+                {
+                    oldestEmployee = employee;
+                }
+            }
+            return oldestEmployee;
         }
 
         public double GetAverageAge()
         {
-            return _employees.Values.Average(e => e.Age);
+            if (_employees.Count == 0)
+            {
+                return 0;
+            }
+
+            double totalAge = 0;
+            foreach (var employee in _employees.Values)
+            {
+                totalAge += employee.Age;
+            }
+            return totalAge / _employees.Count;
         }
 
         public IEnumerable<Employee> GetAllEmployees()
