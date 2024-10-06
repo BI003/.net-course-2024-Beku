@@ -2,7 +2,7 @@
 using Xunit;
 using BankSystem.Data.Storages;
 
-namespace BancSystem.App.Tests
+namespace BankSystem.Data.Tests
 {
     public class ClientStorageTest
     {
@@ -19,7 +19,7 @@ namespace BancSystem.App.Tests
             };
 
             storage.AddRange(clients);
-            
+
             return storage;
         }
 
@@ -49,7 +49,7 @@ namespace BancSystem.App.Tests
         {
             // Arrange
             var storage = InitializeStorageWithClients();
-          
+
             // Act
             var youngestClient = storage.GetYoungestClient();
 
@@ -62,7 +62,7 @@ namespace BancSystem.App.Tests
         {
             // Arrange
             var storage = InitializeStorageWithClients();
-            
+
             // Act
             var oldestClient = storage.GetOldestClient();
 
@@ -75,7 +75,7 @@ namespace BancSystem.App.Tests
         {
             // Arrange
             var storage = InitializeStorageWithClients();
-            
+
             // Act
             var averageAge = storage.GetAverageAge();
 

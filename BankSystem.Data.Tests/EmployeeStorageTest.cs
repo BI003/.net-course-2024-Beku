@@ -2,7 +2,7 @@
 using BankSystem.Domain.Models;
 using Xunit;
 
-namespace BancSystem.App.Tests
+namespace BankSystem.Data.Tests
 {
     public class EmployeeStorageTest
     {
