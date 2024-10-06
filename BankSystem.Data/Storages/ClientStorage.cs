@@ -44,6 +44,15 @@ namespace BankSystem.Data.Storages
             }
         }
 
+        public Client GetClientByPassport(int passport)
+        {
+            if (_clients.TryGetValue(passport, out var client))
+            {
+                return client;
+            }
+            throw new Exception("Клиент не найден!");
+        }
+
         public void AddRange(IEnumerable<Client> clients)
         {
             foreach (var client in clients)

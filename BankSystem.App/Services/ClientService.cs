@@ -48,7 +48,7 @@ namespace BankSystem.App.Services
 
         public void EditAccount(int passport, string currencyCode, decimal newAmount)
         {
-            var client = _clientStorage.GetAllClients().FirstOrDefault(c => c.Passport == passport);
+            var client = _clientStorage.GetClientByPassport(passport);
 
             if (client == null)
             {
@@ -72,7 +72,7 @@ namespace BankSystem.App.Services
 
         public void AddAdditionalAccount(int passport, Account newAccount)
         {
-            var client = _clientStorage.GetAllClients().FirstOrDefault(c => c.Passport == passport);
+            var client = _clientStorage.GetClientByPassport(passport);
 
             if (client == null)
             {
