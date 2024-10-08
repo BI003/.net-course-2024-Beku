@@ -1,14 +1,14 @@
 ﻿using BankSystem.App.Exceptions;
-using BankSystem.Data.Storages;
 using BankSystem.Domain.Models;
+using BankSystem.App.Interfaces;
 
 namespace BankSystem.App.Services
 {
     public class ClientService
     {
-        private readonly ClientStorage _clientStorage;
+        private readonly IClientStorage _clientStorage;
 
-        public ClientService(ClientStorage clientStorage)
+        public ClientService(IClientStorage clientStorage)
         {
             _clientStorage = clientStorage;
         }
@@ -43,7 +43,15 @@ namespace BankSystem.App.Services
                 Amount = 0
             };
 
-            _clientStorage.AddAccountToClient(passport, defaultAccount);
+            var client = _clientStorage.GetClientByPassport(passport);
+            if (client != null)
+            {
+                _clientStorage.AddAccount(client, defaultAccount);
+            }
+            else
+            {
+                throw new Exception("Клиент не найден!");
+            }
         }
 
         public void EditAccount(int passport, string currencyCode, decimal newAmount)

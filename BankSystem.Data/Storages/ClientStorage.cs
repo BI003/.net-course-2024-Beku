@@ -1,14 +1,106 @@
 ﻿using BankSystem.Domain.Models;
+using BankSystem.App.Interfaces;
 
 namespace BankSystem.Data.Storages
 {
-    public class ClientStorage 
+    public class ClientStorage  : IClientStorage
     {
         private Dictionary<int, Client> _clients;
 
         public ClientStorage() 
         {
             _clients = new Dictionary<int, Client>();
+        }
+
+        // Реализация методов из IStorage<Client>
+        public List<Client> Get(Func<Client, bool> filter)
+        {
+            return _clients.Values.Where(filter).ToList();
+        }
+
+        public void Add(Client client)
+        {
+            if (!ClientExists(client.Passport))
+            {
+                _clients.Add(client.Passport, client);
+            }
+            else
+            {
+                throw new Exception("Клиент с таким паспортом уже существует.");
+            }
+        }
+
+        public void Update(Client client)
+        {
+            if (ClientExists(client.Passport))
+            {
+                _clients[client.Passport] = client;
+            }
+            else
+            {
+                throw new Exception("Клиент не найден!");
+            }
+        }
+
+        public void Delete(Client client)
+        {
+            if (ClientExists(client.Passport))
+            {
+                _clients.Remove(client.Passport);
+            }
+            else
+            {
+                throw new Exception("Клиент не найден!");
+            }
+        }
+
+        // Методы работы с аккаунтами клиентов
+        public void AddAccount(Client client, Account account)
+        {
+            if (!_clients.ContainsKey(client.Passport))
+            {
+                throw new Exception("Клиент не найден!");
+            }
+
+            if (!client.Accounts.ContainsKey(account.Currency.Code))
+            {
+                client.Accounts[account.Currency.Code] = new List<Account>();
+            }
+
+            client.Accounts[account.Currency.Code].Add(account);
+        }
+
+        public void UpdateAccount(Client client, Account account)
+        {
+            if (_clients.TryGetValue(client.Passport, out var existingClient))
+            {
+                if (existingClient.Accounts.ContainsKey(account.Currency.Code))
+                {
+                    var accounts = existingClient.Accounts[account.Currency.Code];
+                    var existingAccount = accounts.FirstOrDefault(a => a.Currency.Code == account.Currency.Code);
+
+                    if (existingAccount != null)
+                    {
+                        existingAccount.Amount = account.Amount;
+                    }
+                }
+            }
+        }
+
+        public void DeleteAccount(Client client, Account account)
+        {
+            if (_clients.TryGetValue(client.Passport, out var existingClient))
+            {
+                if (existingClient.Accounts.ContainsKey(account.Currency.Code))
+                {
+                    existingClient.Accounts[account.Currency.Code].Remove(account);
+                }
+            }
+        }
+
+        private bool ClientExists(int passport)
+        {
+            return _clients.ContainsKey(passport);
         }
 
         public void AddClient(Client client)
