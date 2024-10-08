@@ -24,9 +24,9 @@ namespace BankSystem.App.Services
             {
                 throw new UnderageClientException("Клиент не может быть моложе 18 лет!");
             }
-            
-                _clientStorage.AddClient(client);
-                AddDefaultAccount(client.Passport); 
+
+            _clientStorage.Add(client);
+            AddDefaultAccount(client.Passport);
         }
 
         private void AddDefaultAccount(int passport)
@@ -98,12 +98,17 @@ namespace BankSystem.App.Services
         public IEnumerable<Client> GetFilteredClients(Func<Client, bool> filter = null)
         {
             var clients = _clientStorage.GetAllClients();
+            var result = new List<Client>();
 
-            if (filter != null)
+            foreach (var client in clients)
             {
-                clients = clients.Where(filter);
+                if (filter == null || filter(client))
+                {
+                    result.Add(client);
+                }
             }
-            return clients;
+
+            return result;
         }
     }
 }

@@ -2,6 +2,7 @@
 using BankSystem.App.Services;
 using BankSystem.Data.Storages;
 using BankSystem.Domain.Models;
+using BankSystem.App.Interfaces;
 using Xunit;
 
 namespace BancSystem.App.Tests
@@ -9,7 +10,7 @@ namespace BancSystem.App.Tests
     public class EmployeeServiceTests
     {
         private EmployeeService _employeeService;
-        private EmployeeStorage _employeeStorage;
+        private IEmployeeStorage _employeeStorage;
 
         public EmployeeServiceTests()
         {
@@ -17,7 +18,7 @@ namespace BancSystem.App.Tests
             _employeeService = new EmployeeService(_employeeStorage);
         }
 
-        private EmployeeStorage InitializeStorageWithEmployees()
+        private IEmployeeStorage InitializeStorageWithEmployees()
         {
             var storage = new EmployeeStorage();
             var employees = new List<Employee>

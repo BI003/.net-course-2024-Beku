@@ -1,14 +1,14 @@
 ﻿using BankSystem.App.Exceptions;
-using BankSystem.Data.Storages;
+using BankSystem.App.Interfaces;
 using BankSystem.Domain.Models;
 
 namespace BankSystem.App.Services
 {
     public class EmployeeService
     {
-        private readonly EmployeeStorage _employeeStorage;
+        private readonly IEmployeeStorage _employeeStorage;
 
-        public EmployeeService(EmployeeStorage employeeStorage)
+        public EmployeeService(IEmployeeStorage employeeStorage)
         {
             _employeeStorage = employeeStorage;
         }

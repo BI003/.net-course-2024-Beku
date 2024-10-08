@@ -1,15 +1,16 @@
 ﻿using BankSystem.App.Exceptions;
 using BankSystem.App.Services;
-using BankSystem.Data.Storages;
+using BankSystem.App.Interfaces;
 using BankSystem.Domain.Models;
 using Xunit;
+using BankSystem.Data.Storages;
 
 namespace BancSystem.App.Tests
 {
     public class ClientServiceTests
     {
         private ClientService _clientService;
-        private ClientStorage _clientStorage;
+        private IClientStorage _clientStorage;
 
         public ClientServiceTests()
         {
@@ -17,7 +18,7 @@ namespace BancSystem.App.Tests
             _clientService = new ClientService(_clientStorage);
         }
 
-        private ClientStorage InitializeStorageWithClients()
+        private IClientStorage InitializeStorageWithClients()
         {
             var storage = new ClientStorage();
             var clients = new List<Client>

@@ -9,5 +9,9 @@ namespace BankSystem.App.Interfaces
         void UpdateAccount(Client client, Account account);
 
         void DeleteAccount(Client client, Account account);
+
+        IEnumerable<Client> GetAllClients();
+
+        Client GetClientByPassport(int passport);
     }
 }
