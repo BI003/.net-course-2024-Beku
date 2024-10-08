@@ -108,11 +108,6 @@ namespace BankSystem.Data.Storages
             }
         }
         
-        public void AddClient(Client client)
-        {
-            Add(client);
-        }
-
         public void AddAccountToClient(int passport, Account account)
         {
             AddAccount(GetClientByPassport(passport), account);

@@ -30,7 +30,7 @@ namespace BankSystem.App.Services
                 throw new Exception("Сотрудник с таким паспортом уже существует.");
             }
 
-            _employeeStorage.AddEmployee(employee);
+            _employeeStorage.Add(employee);
             AddDefaultAccount(employee.Passport);
         }
 
@@ -48,7 +48,7 @@ namespace BankSystem.App.Services
                 Amount = 0
             };
 
-            _employeeStorage.AddAccountToEmployee(passport, defaultAccount);
+            _employeeStorage.AddAccount(passport, defaultAccount);
         }
 
         public void EditSalary(int passport, int newSalary)

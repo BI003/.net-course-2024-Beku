@@ -4,19 +4,15 @@ namespace BankSystem.App.Interfaces
 {
     public interface IEmployeeStorage : IStorage<Employee>
     {
-        void AddAccount(Client client, Account account);
+        void AddAccount(int passport, Account account);
 
-        void UpdateAccount(Client client, Account account);
+        void UpdateAccount(Employee employee, Account account);
 
-        void DeleteAccount(Client client, Account account);
-
-        void AddAccountToEmployee(int passport, Account account);
+        void DeleteAccount(Employee employee, Account account);
 
         IEnumerable<Employee> GetAllEmployees();
 
         Employee GetEmployeeByPassport(int passport);
-
-        void AddEmployee(Employee employee);
 
         bool EmployeeExists(int passport);
     }

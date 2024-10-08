@@ -66,71 +66,7 @@ namespace BankSystem.Data.Storages
             }
         }
 
-        public void AddAccount(Client client, Account account)
-        {
-            if (!_employees.ContainsKey(client.Passport))
-            {
-                throw new Exception("Клиент не найден!");
-            }
-
-            if (!client.Accounts.ContainsKey(account.Currency.Code))
-            {
-                client.Accounts[account.Currency.Code] = new List<Account>();
-            }
-
-            client.Accounts[account.Currency.Code].Add(account);
-        }
-
-        public void UpdateAccount(Client client, Account account)
-        {
-            if (_employees.TryGetValue(client.Passport, out var existingClient))
-            {
-                if (existingClient.Accounts.ContainsKey(account.Currency.Code))
-                {
-                    var accounts = existingClient.Accounts[account.Currency.Code];
-                    var existingAccount = accounts.FirstOrDefault(a => a.Currency.Code == account.Currency.Code);
-
-                    if (existingAccount != null)
-                    {
-                        existingAccount.Amount = account.Amount;
-                    }
-                }
-            }
-        }
-
-        public void DeleteAccount(Client client, Account account)
-        {
-            if (_employees.TryGetValue(client.Passport, out var existingClient))
-            {
-                if (existingClient.Accounts.ContainsKey(account.Currency.Code))
-                {
-                    existingClient.Accounts[account.Currency.Code].Remove(account);
-                }
-            }
-        }
-
-        public void AddEmployee(Employee employee)
-        {
-            if (!EmployeeExists(employee.Passport))
-            {
-                _employees.Add(employee.Passport, employee);
-            }
-            else
-            {
-                throw new Exception("Сотрудник с таким паспортом уже существует.");
-            }
-        }
-
-        public Employee GetEmployeeByPassport(int passport)
-        {
-            if (_employees.TryGetValue(passport, out var employee))
-            {
-                return employee;
-            }
-            throw new Exception("Сотрудник не найден!");
-        }
-
-        public void AddAccountToEmployee(int passport, Account account)
+        public void AddAccount(int passport, Account account)
         {
             if (_employees.TryGetValue(passport, out var employee))
             {
@@ -145,6 +81,45 @@ namespace BankSystem.Data.Storages
                 throw new Exception("Сотрудник не найден!");
             }
         }
+
+        public void UpdateAccount(Employee employee, Account account)
+        {
+            if (_employees.TryGetValue(employee.Passport, out var existingEmployee))
+            {
+                if (existingEmployee.Accounts.ContainsKey(account.Currency.Code))
+                {
+                    var accounts = existingEmployee.Accounts[account.Currency.Code];
+                    var existingAccount = accounts.FirstOrDefault(a => a.Currency.Code == account.Currency.Code);
+
+                    if (existingAccount != null)
+                    {
+                        existingAccount.Amount = account.Amount;
+                    }
+                }
+            }
+        }
+
+        public void DeleteAccount(Employee employee, Account account)
+        {
+            if (_employees.TryGetValue(employee.Passport, out var existingEmployee))
+            {
+                if (existingEmployee.Accounts.ContainsKey(account.Currency.Code))
+                {
+                    existingEmployee.Accounts[account.Currency.Code].Remove(account);
+                }
+            }
+        }
+
+        public Employee GetEmployeeByPassport(int passport)
+        {
+            if (_employees.TryGetValue(passport, out var employee))
+            {
+                return employee;
+            }
+            throw new Exception("Сотрудник не найден!");
+        }
+
+        
 
         public void AddRange(IEnumerable<Employee> employees)
         {
