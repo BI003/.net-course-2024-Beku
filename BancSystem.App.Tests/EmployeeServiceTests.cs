@@ -47,7 +47,7 @@ namespace BancSystem.App.Tests
             _employeeService.AddEmployee(employee);
 
             // Assert
-            Assert.Contains(employee, _employeeStorage.GetAllEmployees());
+            Assert.Contains(employee, _employeeStorage.Get(e => true));
             Assert.True(employee.Accounts.ContainsKey("USD"));
             Assert.Single(employee.Accounts["USD"]);
             Assert.Equal(0, employee.Accounts["USD"][0].Amount);
@@ -62,7 +62,7 @@ namespace BancSystem.App.Tests
                 Name = "Charlie",
                 Surname = "Brown",
                 Age = 30,
-                Passport = 0, 
+                Passport = 0,
                 Salary = 60000
             };
 
@@ -81,7 +81,7 @@ namespace BancSystem.App.Tests
             {
                 Name = "Charlie",
                 Surname = "Brown",
-                Age = 17, 
+                Age = 17,
                 Passport = 789123,
                 Salary = 60000
             };
@@ -104,7 +104,7 @@ namespace BancSystem.App.Tests
             _employeeService.EditSalary(passport, newSalary);
 
             // Assert
-            var employee = _employeeStorage.GetAllEmployees().First(e => e.Passport == passport);
+            var employee = _employeeStorage.Get(e => e.Passport == passport).First();
             Assert.Equal(newSalary, employee.Salary);
         }
 
@@ -112,7 +112,7 @@ namespace BancSystem.App.Tests
         public void EditAccount_ValidData_ShouldEditAccount()
         {
             // Arrange
-            var employee = _employeeStorage.GetAllEmployees().First(e => e.Passport == 123456);
+            var employee = _employeeStorage.Get(e => e.Passport == 123456).First();
             var newAmount = 200;
 
             if (!employee.Accounts.ContainsKey("USD"))
@@ -131,7 +131,7 @@ namespace BancSystem.App.Tests
         public void AddAdditionalAccount_ValidData_ShouldAddAdditionalAccount()
         {
             // Arrange
-            var employee = _employeeStorage.GetAllEmployees().First(e => e.Passport == 123456);
+            var employee = _employeeStorage.Get(e => e.Passport == 123456).First();
             var newAccount = new Account
             {
                 Currency = new Currency { Code = "EUR", Name = "Euro" },
@@ -151,7 +151,7 @@ namespace BancSystem.App.Tests
         public void GetFilteredEmployees_WithValidName_ShouldReturnEmployees()
         {
             // Act
-            var result = _employeeService.GetFilteredEmployees(e => e.Name == "Alice");
+            var result = _employeeStorage.Get(e => e.Name == "Alice");
 
             // Assert
             Assert.Single(result);
@@ -162,7 +162,7 @@ namespace BancSystem.App.Tests
         public void GetFilteredEmployees_WithNonExistentName_ShouldReturnNoEmployees()
         {
             // Act
-            var result = _employeeService.GetFilteredEmployees(e => e.Name == "NonExistentName");
+            var result = _employeeStorage.Get(e => e.Name == "NonExistentName");
 
             // Assert
             Assert.Empty(result);
