@@ -31,10 +31,10 @@ namespace BankSystem.App.Services
             }
 
             _employeeStorage.Add(employee);
-            AddDefaultAccount(employee.Passport);
+            AddDefaultAccount(employee);
         }
 
-        private void AddDefaultAccount(int passport)
+        private void AddDefaultAccount(Employee employee)
         {
             var defaultCurrency = new Currency()
             {
@@ -48,12 +48,12 @@ namespace BankSystem.App.Services
                 Amount = 0
             };
 
-            _employeeStorage.AddAccount(passport, defaultAccount);
+            _employeeStorage.AddAccount(employee, defaultAccount);
         }
 
         public void EditSalary(int passport, int newSalary)
         {
-            var employee = _employeeStorage.GetEmployeeByPassport(passport);
+            var employee = _employeeStorage.Get(e => e.Passport == passport).FirstOrDefault();
 
             if (employee == null)
             {
@@ -61,11 +61,12 @@ namespace BankSystem.App.Services
             }
 
             employee.Salary = newSalary;
+            _employeeStorage.Update(employee); 
         }
 
         public void EditAccount(int passport, string currencyCode, decimal newAmount)
         {
-            var employee = _employeeStorage.GetEmployeeByPassport(passport);
+            var employee = _employeeStorage.Get(e => e.Passport == passport).FirstOrDefault();
 
             if (employee == null)
             {
@@ -85,11 +86,12 @@ namespace BankSystem.App.Services
             }
 
             account.Amount = newAmount;
+            _employeeStorage.Update(employee); 
         }
 
         public void AddAdditionalAccount(int passport, Account newAccount)
         {
-            var employee = _employeeStorage.GetEmployeeByPassport(passport);
+            var employee = _employeeStorage.Get(e => e.Passport == passport).FirstOrDefault();
 
             if (employee == null)
             {
@@ -102,17 +104,12 @@ namespace BankSystem.App.Services
             }
 
             employee.Accounts[newAccount.Currency.Code].Add(newAccount);
+            _employeeStorage.Update(employee); 
         }
 
         public IEnumerable<Employee> GetFilteredEmployees(Func<Employee, bool> filter = null)
         {
-            var employees = _employeeStorage.GetAllEmployees();
-
-            if (filter != null)
-            {
-                employees = employees.Where(filter);
-            }
-            return employees;
+            return _employeeStorage.Get(filter);
         }
     }
 }

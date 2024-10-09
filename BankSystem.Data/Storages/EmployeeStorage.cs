@@ -66,15 +66,15 @@ namespace BankSystem.Data.Storages
             }
         }
 
-        public void AddAccount(int passport, Account account)
+        public void AddAccount(Employee employee, Account account)
         {
-            if (_employees.TryGetValue(passport, out var employee))
+            if (_employees.TryGetValue(employee.Passport, out var existingEmployee))
             {
-                if (!employee.Accounts.ContainsKey(account.Currency.Code))
+                if (!existingEmployee.Accounts.ContainsKey(account.Currency.Code))
                 {
-                    employee.Accounts[account.Currency.Code] = new List<Account>();
+                    existingEmployee.Accounts[account.Currency.Code] = new List<Account>();
                 }
-                employee.Accounts[account.Currency.Code].Add(account);
+                existingEmployee.Accounts[account.Currency.Code].Add(account);
             }
             else
             {
@@ -109,17 +109,6 @@ namespace BankSystem.Data.Storages
                 }
             }
         }
-
-        public Employee GetEmployeeByPassport(int passport)
-        {
-            if (_employees.TryGetValue(passport, out var employee))
-            {
-                return employee;
-            }
-            throw new Exception("Сотрудник не найден!");
-        }
-
-        
 
         public void AddRange(IEnumerable<Employee> employees)
         {
