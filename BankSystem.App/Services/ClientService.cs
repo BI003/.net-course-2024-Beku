@@ -97,18 +97,7 @@ namespace BankSystem.App.Services
 
         public IEnumerable<Client> GetFilteredClients(Func<Client, bool> filter = null)
         {
-            var clients = _clientStorage.GetAllClients();
-            var result = new List<Client>();
-
-            foreach (var client in clients)
-            {
-                if (filter == null || filter(client))
-                {
-                    result.Add(client);
-                }
-            }
-
-            return result;
+            return _clientStorage.Get(filter);
         }
     }
 }
