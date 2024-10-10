@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankSystem.Data", "BankSystem.Data\BankSystem.Data.csproj", "{25C19767-8254-4DBB-993E-C634EF76BD20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankSystem.Data.Tests", "BankSystem.Data.Tests\BankSystem.Data.Tests.csproj", "{408919ED-552D-4FEF-B317-D48EE261DF52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankSystem.Data.Tests", "BankSystem.Data.Tests\BankSystem.Data.Tests.csproj", "{408919ED-552D-4FEF-B317-D48EE261DF52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

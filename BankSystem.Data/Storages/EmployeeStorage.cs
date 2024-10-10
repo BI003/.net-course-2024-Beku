@@ -1,8 +1,9 @@
-﻿using BankSystem.Domain.Models;
+﻿using BankSystem.App.Interfaces;
+using BankSystem.Domain.Models;
 
 namespace BankSystem.Data.Storages
 {
-    public class EmployeeStorage
+    public class EmployeeStorage : IEmployeeStorage
     {
         private Dictionary<int, Employee> _employees;
 
@@ -11,7 +12,25 @@ namespace BankSystem.Data.Storages
             _employees = new Dictionary<int, Employee>();
         }
 
-        public void AddEmployee(Employee employee)
+        public bool EmployeeExists(int passport)
+        {
+            return _employees.ContainsKey(passport);
+        }
+
+        public List<Employee> Get(Func<Employee, bool> filter)
+        {
+            var result = new List<Employee>();
+            foreach (var employee in _employees.Values)
+            {
+                if (filter(employee))
+                {
+                    result.Add(employee);
+                }
+            }
+            return result;
+        }
+
+        public void Add(Employee employee)
         {
             if (!EmployeeExists(employee.Passport))
             {
@@ -23,29 +42,11 @@ namespace BankSystem.Data.Storages
             }
         }
 
-        public bool EmployeeExists(int passport)
+        public void Update(Employee employee)
         {
-            return _employees.ContainsKey(passport);
-        }
-
-        public Employee GetEmployeeByPassport(int passport)
-        {
-            if (_employees.TryGetValue(passport, out var employee))
+            if (EmployeeExists(employee.Passport))
             {
-                return employee;
-            }
-            throw new Exception("Сотрудник не найден!");
-        }
-
-        public void AddAccountToEmployee(int passport, Account account)
-        {
-            if (_employees.TryGetValue(passport, out var employee))
-            {
-                if (!employee.Accounts.ContainsKey(account.Currency.Code))
-                {
-                    employee.Accounts[account.Currency.Code] = new List<Account>();
-                }
-                employee.Accounts[account.Currency.Code].Add(account);
+                _employees[employee.Passport] = employee;
             }
             else
             {
@@ -53,11 +54,67 @@ namespace BankSystem.Data.Storages
             }
         }
 
+        public void Delete(Employee employee)
+        {
+            if (EmployeeExists(employee.Passport))
+            {
+                _employees.Remove(employee.Passport);
+            }
+            else
+            {
+                throw new Exception("Сотрудник не найден!");
+            }
+        }
+
+        public void AddAccount(Employee employee, Account account)
+        {
+            if (_employees.TryGetValue(employee.Passport, out var existingEmployee))
+            {
+                if (!existingEmployee.Accounts.ContainsKey(account.Currency.Code))
+                {
+                    existingEmployee.Accounts[account.Currency.Code] = new List<Account>();
+                }
+                existingEmployee.Accounts[account.Currency.Code].Add(account);
+            }
+            else
+            {
+                throw new Exception("Сотрудник не найден!");
+            }
+        }
+
+        public void UpdateAccount(Employee employee, Account account)
+        {
+            if (_employees.TryGetValue(employee.Passport, out var existingEmployee))
+            {
+                if (existingEmployee.Accounts.ContainsKey(account.Currency.Code))
+                {
+                    var accounts = existingEmployee.Accounts[account.Currency.Code];
+                    var existingAccount = accounts.FirstOrDefault(a => a.Currency.Code == account.Currency.Code);
+
+                    if (existingAccount != null)
+                    {
+                        existingAccount.Amount = account.Amount;
+                    }
+                }
+            }
+        }
+
+        public void DeleteAccount(Employee employee, Account account)
+        {
+            if (_employees.TryGetValue(employee.Passport, out var existingEmployee))
+            {
+                if (existingEmployee.Accounts.ContainsKey(account.Currency.Code))
+                {
+                    existingEmployee.Accounts[account.Currency.Code].Remove(account);
+                }
+            }
+        }
+
         public void AddRange(IEnumerable<Employee> employees)
         {
             foreach (var employee in employees)
             {
-                AddEmployee(employee);
+                Add(employee);
             }
         }
 
@@ -74,7 +131,6 @@ namespace BankSystem.Data.Storages
             }
             return youngestEmployee;
         }
-
 
         public Employee GetOldestEmployee()
         {

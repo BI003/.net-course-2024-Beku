@@ -1,15 +1,16 @@
 ﻿using BankSystem.App.Exceptions;
 using BankSystem.App.Services;
-using BankSystem.Data.Storages;
+using BankSystem.App.Interfaces;
 using BankSystem.Domain.Models;
 using Xunit;
+using BankSystem.Data.Storages;
 
 namespace BancSystem.App.Tests
 {
     public class ClientServiceTests
     {
         private ClientService _clientService;
-        private ClientStorage _clientStorage;
+        private IClientStorage _clientStorage;
 
         public ClientServiceTests()
         {
@@ -17,7 +18,7 @@ namespace BancSystem.App.Tests
             _clientService = new ClientService(_clientStorage);
         }
 
-        private ClientStorage InitializeStorageWithClients()
+        private IClientStorage InitializeStorageWithClients()
         {
             var storage = new ClientStorage();
             var clients = new List<Client>
@@ -47,7 +48,7 @@ namespace BancSystem.App.Tests
             _clientService.AddClient(client);
 
             // Assert
-            Assert.Contains(client, _clientStorage.GetAllClients());
+            Assert.Contains(client, _clientStorage.Get(c => true));  
             Assert.True(client.Accounts.ContainsKey("USD"));
             Assert.Single(client.Accounts["USD"]);
             Assert.Equal(0, client.Accounts["USD"][0].Amount);
@@ -62,7 +63,7 @@ namespace BancSystem.App.Tests
                 Name = "Alice",
                 Surname = "Smith",
                 Age = 30,
-                Passport = 0, 
+                Passport = 0,
                 PhoneNumber = 373123456,
                 DateOfBirth = new DateTime(1994, 1, 1)
             };
@@ -82,7 +83,7 @@ namespace BancSystem.App.Tests
             {
                 Name = "Alice",
                 Surname = "Smith",
-                Age = 17, 
+                Age = 17,
                 Passport = 789123,
                 PhoneNumber = 373852147,
                 DateOfBirth = new DateTime(2006, 1, 1)
@@ -99,7 +100,7 @@ namespace BancSystem.App.Tests
         public void AddAdditionalAccount_ClientNotFound_ShouldThrowException()
         {
             // Arrange
-            var passport = 123999; 
+            var passport = 123999;
             var newAccount = new Account
             {
                 Currency = new Currency { Code = "USD", Name = "Dollar" },
@@ -117,7 +118,7 @@ namespace BancSystem.App.Tests
         public void EditAccount_ValidData_ShouldEditAccount()
         {
             // Arrange
-            var client = _clientStorage.GetAllClients().First(c => c.Passport == 123456);
+            var client = _clientStorage.Get(c => c.Passport == 123456).FirstOrDefault();  
 
             if (!client.Accounts.ContainsKey("USD"))
             {

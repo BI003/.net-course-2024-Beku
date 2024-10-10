@@ -1,8 +1,9 @@
 ﻿using BankSystem.Domain.Models;
+using BankSystem.App.Interfaces;
 
 namespace BankSystem.Data.Storages
 {
-    public class ClientStorage 
+    public class ClientStorage  : IClientStorage
     {
         private Dictionary<int, Client> _clients;
 
@@ -10,8 +11,25 @@ namespace BankSystem.Data.Storages
         {
             _clients = new Dictionary<int, Client>();
         }
+        private bool ClientExists(int passport)
+        {
+            return _clients.ContainsKey(passport);
+        }
 
-        public void AddClient(Client client)
+        public List<Client> Get(Func<Client, bool> filter)
+        {
+            var result = new List<Client>();
+            foreach (var client in _clients.Values)
+            {
+                if (filter(client))
+                {
+                    result.Add(client);
+                }
+            }
+            return result;
+        }
+
+        public void Add(Client client)
         {
             if (!ClientExists(client.Passport))
             {
@@ -23,25 +41,76 @@ namespace BankSystem.Data.Storages
             }
         }
 
-        public bool ClientExists(int passport)
+        public void Update(Client client)
         {
-            return _clients.ContainsKey(passport);
-        }
-
-        public void AddAccountToClient(int passport, Account account)
-        {
-            if (_clients.TryGetValue(passport, out var client))
+            if (ClientExists(client.Passport))
             {
-                if (!client.Accounts.ContainsKey(account.Currency.Code))
-                {
-                    client.Accounts[account.Currency.Code] = new List<Account>();
-                }
-                client.Accounts[account.Currency.Code].Add(account);
+                _clients[client.Passport] = client;
             }
             else
             {
                 throw new Exception("Клиент не найден!");
             }
+        }
+
+        public void Delete(Client client)
+        {
+            if (ClientExists(client.Passport))
+            {
+                _clients.Remove(client.Passport);
+            }
+            else
+            {
+                throw new Exception("Клиент не найден!");
+            }
+        }
+
+        public void AddAccount(Client client, Account account)
+        {
+            if (!_clients.ContainsKey(client.Passport))
+            {
+                throw new Exception("Клиент не найден!");
+            }
+
+            if (!client.Accounts.ContainsKey(account.Currency.Code))
+            {
+                client.Accounts[account.Currency.Code] = new List<Account>();
+            }
+
+            client.Accounts[account.Currency.Code].Add(account);
+        }
+
+        public void UpdateAccount(Client client, Account account)
+        {
+            if (_clients.TryGetValue(client.Passport, out var existingClient))
+            {
+                if (existingClient.Accounts.ContainsKey(account.Currency.Code))
+                {
+                    var accounts = existingClient.Accounts[account.Currency.Code];
+                    var existingAccount = accounts.FirstOrDefault(a => a.Currency.Code == account.Currency.Code);
+
+                    if (existingAccount != null)
+                    {
+                        existingAccount.Amount = account.Amount;
+                    }
+                }
+            }
+        }
+
+        public void DeleteAccount(Client client, Account account)
+        {
+            if (_clients.TryGetValue(client.Passport, out var existingClient))
+            {
+                if (existingClient.Accounts.ContainsKey(account.Currency.Code))
+                {
+                    existingClient.Accounts[account.Currency.Code].Remove(account);
+                }
+            }
+        }
+        
+        public void AddAccountToClient(int passport, Account account)
+        {
+            AddAccount(GetClientByPassport(passport), account);
         }
 
         public Client GetClientByPassport(int passport)
@@ -57,7 +126,7 @@ namespace BankSystem.Data.Storages
         {
             foreach (var client in clients)
             {
-                AddClient(client);
+                Add(client);
             }
         }
 
@@ -106,7 +175,7 @@ namespace BankSystem.Data.Storages
 
         public IEnumerable<Client> GetAllClients()
         {
-            return _clients.Values.AsEnumerable();
+            return _clients.Values.ToList();
         }
     }
 }

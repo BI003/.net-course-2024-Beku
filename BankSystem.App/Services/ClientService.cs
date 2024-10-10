@@ -1,14 +1,14 @@
 ﻿using BankSystem.App.Exceptions;
-using BankSystem.Data.Storages;
 using BankSystem.Domain.Models;
+using BankSystem.App.Interfaces;
 
 namespace BankSystem.App.Services
 {
     public class ClientService
     {
-        private readonly ClientStorage _clientStorage;
+        private readonly IClientStorage _clientStorage;
 
-        public ClientService(ClientStorage clientStorage)
+        public ClientService(IClientStorage clientStorage)
         {
             _clientStorage = clientStorage;
         }
@@ -24,9 +24,9 @@ namespace BankSystem.App.Services
             {
                 throw new UnderageClientException("Клиент не может быть моложе 18 лет!");
             }
-            
-                _clientStorage.AddClient(client);
-                AddDefaultAccount(client.Passport); 
+
+            _clientStorage.Add(client);
+            AddDefaultAccount(client.Passport);
         }
 
         private void AddDefaultAccount(int passport)
@@ -43,7 +43,15 @@ namespace BankSystem.App.Services
                 Amount = 0
             };
 
-            _clientStorage.AddAccountToClient(passport, defaultAccount);
+            var client = _clientStorage.GetClientByPassport(passport);
+            if (client != null)
+            {
+                _clientStorage.AddAccount(client, defaultAccount);
+            }
+            else
+            {
+                throw new Exception("Клиент не найден!");
+            }
         }
 
         public void EditAccount(int passport, string currencyCode, decimal newAmount)
@@ -89,13 +97,7 @@ namespace BankSystem.App.Services
 
         public IEnumerable<Client> GetFilteredClients(Func<Client, bool> filter = null)
         {
-            var clients = _clientStorage.GetAllClients();
-
-            if (filter != null)
-            {
-                clients = clients.Where(filter);
-            }
-            return clients;
+            return _clientStorage.Get(filter);
         }
     }
 }

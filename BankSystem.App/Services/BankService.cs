@@ -13,7 +13,9 @@ namespace BankSystem.App.Services
             Expenses = expenses;
             NumberOwners = numberOwners;
         }
-        
+
+        private List<Person> _blackList = new List<Person>();
+
         public static int OwnerSalaryCalculation(int profit, int expenses, int numberOwners)
         {
              
@@ -38,6 +40,39 @@ namespace BankSystem.App.Services
         public List<Client> FindYoungerClients(List<Client> clients, int limitAge)
         {
             return clients.Where(client => client.Age < limitAge).ToList();
+        }
+
+        public void AddBonus(Person person, int bonus)
+        {
+            if (person is Employee employee)
+            {
+                employee.Salary += bonus;
+            }
+            else if (person is Client client)
+            {
+                var defaultCurrency = "USD";
+                if (client.Accounts.ContainsKey(defaultCurrency))
+                {
+                    var account = client.Accounts[defaultCurrency].FirstOrDefault();
+                    if (account != null)
+                    {
+                        account.Amount += bonus;
+                    }
+                }
+            }
+        }
+
+        public void AddToBlackList<T>(T person) where T : Person
+        {
+            if (!_blackList.Contains(person))
+            {
+                _blackList.Add(person);
+            }
+        }
+
+        public bool IsPersonInBlackList<T>(T person) where T : Person
+        {
+            return _blackList.Contains(person);
         }
     }
 }
