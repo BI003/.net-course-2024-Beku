@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{2DAB60D7-5A6B-4CEC-A89D-2D0EA563B334}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{BCDD88E8-992E-4798-A26E-12FB1F55E5A5}"
+	ProjectSection(SolutionItems) = preProject
+		C:\Users\ivanb\AppData\Roaming\JetBrains\DataGrip2020.1\consoles\db\443078be-f1d6-4e58-a248-49096b90d7d3\console_1.sql = C:\Users\ivanb\AppData\Roaming\JetBrains\DataGrip2020.1\consoles\db\443078be-f1d6-4e58-a248-49096b90d7d3\console_1.sql
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{ED1B5DD4-9B0E-4EAB-8ABA-2275C84D745B}"
 EndProject
