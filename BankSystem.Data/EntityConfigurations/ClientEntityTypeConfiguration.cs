@@ -8,7 +8,7 @@ namespace BankSystem.Data.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Client> builder)
         {
-            builder.ToTable("clients");
+            builder.ToTable("Clients");
 
             builder.HasKey(c => c.Id);
             builder.Property(e => e.Name).HasMaxLength(20).IsRequired();
@@ -18,7 +18,7 @@ namespace BankSystem.Data.EntityConfigurations
             builder.Property(e => e.PhoneNumber);
             builder.Property(e => e.DateOfBirth);
 
-            builder.Property(e => e.Accounts).IsRequired();
+            builder.HasMany(e => e.Accounts).WithOne().OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -5,11 +5,11 @@
         public string Contract { get; set; }
         public int Salary { get; set; }
 
-        public Dictionary<string, List<Account>> Accounts { get; set; }
+        public List<Account> Accounts { get; set; }
 
         public Employee()
         {
-            Accounts = new Dictionary<string, List<Account>>();
+            Accounts = new List<Account>();
         }
 
         public override bool Equals(object obj)

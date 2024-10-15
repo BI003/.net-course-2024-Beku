@@ -8,9 +8,11 @@ namespace BankSystem.Data.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Account> builder) 
         {
-            builder.ToTable("accounts");
+            builder.ToTable("Accounts");
 
             builder.HasKey(a => a.Id);
+            builder.Property(a => a.CurrencyName).IsRequired();
+            builder.Property(a => a.Amount).HasColumnType("decimal(18,2)");
         }
     }
 }
