@@ -25,7 +25,7 @@ namespace BankSystem.App.Services
                 throw new UnderageClientException("Сотрудник не может быть моложе 18 лет!");
             }
 
-            if (_employeeStorage.EmployeeExists(employee.Passport))
+            if (_employeeStorage.GetById(employee.Id) != null)
             {
                 throw new Exception("Сотрудник с таким паспортом уже существует.");
             }
@@ -36,24 +36,18 @@ namespace BankSystem.App.Services
 
         private void AddDefaultAccount(Employee employee)
         {
-            var defaultCurrency = new Currency()
+            var defaultAccount = new Account
             {
-                Code = "USD",
-                Name = "Dollar"
-            };
-
-            var defaultAccount = new Account()
-            {
-                Currency = defaultCurrency,
+                CurrencyName = "USD",
                 Amount = 0
             };
 
-            _employeeStorage.AddAccount(employee, defaultAccount);
+            _employeeStorage.AddAccount(employee.Id, defaultAccount);
         }
 
-        public void EditSalary(int passport, int newSalary)
+        public void EditSalary(Guid employeeId, int newSalary)
         {
-            var employee = _employeeStorage.Get(e => e.Passport == passport).FirstOrDefault();
+            var employee = _employeeStorage.GetById(employeeId);
 
             if (employee == null)
             {
@@ -61,55 +55,41 @@ namespace BankSystem.App.Services
             }
 
             employee.Salary = newSalary;
-            _employeeStorage.Update(employee); 
+            _employeeStorage.Update(employee);
         }
 
-        public void EditAccount(int passport, string currencyCode, decimal newAmount)
+        public void EditAccount(Guid employeeId, Guid accountId, decimal newAmount)
         {
-            var employee = _employeeStorage.Get(e => e.Passport == passport).FirstOrDefault();
+            var employee = _employeeStorage.GetById(employeeId);
 
             if (employee == null)
             {
                 throw new Exception("Сотрудник не найден!");
             }
 
-            if (!employee.Accounts.TryGetValue(currencyCode, out var accountList) || accountList == null || !accountList.Any())
-            {
-                throw new Exception($"Счета в валюте {currencyCode} не найдены.");
-            }
-
-            var account = accountList.FirstOrDefault();
-
+            var account = employee.Accounts.FirstOrDefault(a => a.Id == accountId);
             if (account == null)
             {
-                throw new Exception($"Счёт в валюте {currencyCode} не найден.");
+                throw new Exception("Счёт не найден!");
             }
 
             account.Amount = newAmount;
-            _employeeStorage.Update(employee); 
+            _employeeStorage.Update(employee); // Обновляем сотрудника
         }
 
-        public void AddAdditionalAccount(int passport, Account newAccount)
+        public void AddAdditionalAccount(Guid employeeId, Account newAccount)
         {
-            var employee = _employeeStorage.Get(e => e.Passport == passport).FirstOrDefault();
-
-            if (employee == null)
-            {
-                throw new Exception("Сотрудник не найден!");
-            }
-
-            if (!employee.Accounts.ContainsKey(newAccount.Currency.Code))
-            {
-                employee.Accounts[newAccount.Currency.Code] = new List<Account>();
-            }
-
-            employee.Accounts[newAccount.Currency.Code].Add(newAccount);
-            _employeeStorage.Update(employee); 
+            _employeeStorage.AddAccount(employeeId, newAccount);
         }
 
-        public IEnumerable<Employee> GetFilteredEmployees(Func<Employee, bool> filter = null)
+        public void DeleteAccount(Guid employeeId, Guid accountId)
         {
-            return _employeeStorage.Get(filter);
+            _employeeStorage.DeleteAccount(employeeId, accountId);
+        }
+
+        public IEnumerable<Employee> GetFilteredEmployees(Func<Employee, bool> filter = null, int pageNumber = 1, int pageSize = 10)
+        {
+            return _employeeStorage.GetFilteredEmployees(filter, pageNumber, pageSize);
         }
     }
 }

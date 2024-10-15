@@ -1,169 +1,96 @@
 ﻿using BankSystem.App.Interfaces;
 using BankSystem.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankSystem.Data.Storages
 {
     public class EmployeeStorage : IEmployeeStorage
     {
-        private Dictionary<int, Employee> _employees;
+        private readonly BankSystemDbContext _dbContext;
 
-        public EmployeeStorage()
+        public EmployeeStorage(BankSystemDbContext dbContext)
         {
-            _employees = new Dictionary<int, Employee>();
+            _dbContext = dbContext;
         }
 
-        public bool EmployeeExists(int passport)
+        // Получить сотрудника по идентификатору
+        public Employee GetById(Guid employeeId)
         {
-            return _employees.ContainsKey(passport);
+            return _dbContext.Employees.Include(e => e.Accounts).FirstOrDefault(e => e.Id == employeeId);
         }
 
-        public List<Employee> Get(Func<Employee, bool> filter)
-        {
-            var result = new List<Employee>();
-            foreach (var employee in _employees.Values)
-            {
-                if (filter(employee))
-                {
-                    result.Add(employee);
-                }
-            }
-            return result;
-        }
-
+        // Добавить нового сотрудника
         public void Add(Employee employee)
         {
-            if (!EmployeeExists(employee.Passport))
-            {
-                _employees.Add(employee.Passport, employee);
-            }
-            else
-            {
-                throw new Exception("Сотрудник с таким паспортом уже существует.");
-            }
+            _dbContext.Employees.Add(employee);
+            _dbContext.SaveChanges();
         }
 
+        // Изменить сотрудника
         public void Update(Employee employee)
         {
-            if (EmployeeExists(employee.Passport))
-            {
-                _employees[employee.Passport] = employee;
-            }
-            else
-            {
-                throw new Exception("Сотрудник не найден!");
-            }
+            _dbContext.Employees.Update(employee);
+            _dbContext.SaveChanges();
         }
 
+        // Удалить сотрудника
         public void Delete(Employee employee)
         {
-            if (EmployeeExists(employee.Passport))
-            {
-                _employees.Remove(employee.Passport);
-            }
-            else
+            _dbContext.Employees.Remove(employee);
+            _dbContext.SaveChanges();
+        }
+
+        // Добавить лицевой счет
+        public void AddAccount(Guid employeeId, Account account)
+        {
+            var employee = GetById(employeeId);
+            if (employee == null)
             {
                 throw new Exception("Сотрудник не найден!");
             }
+
+            employee.Accounts.Add(account);
+            _dbContext.SaveChanges();
         }
 
-        public void AddAccount(Employee employee, Account account)
+        // Удалить лицевой счет
+        public void DeleteAccount(Guid employeeId, Guid accountId)
         {
-            if (_employees.TryGetValue(employee.Passport, out var existingEmployee))
-            {
-                if (!existingEmployee.Accounts.ContainsKey(account.Currency.Code))
-                {
-                    existingEmployee.Accounts[account.Currency.Code] = new List<Account>();
-                }
-                existingEmployee.Accounts[account.Currency.Code].Add(account);
-            }
-            else
+            var employee = GetById(employeeId);
+            if (employee == null)
             {
                 throw new Exception("Сотрудник не найден!");
             }
-        }
 
-        public void UpdateAccount(Employee employee, Account account)
-        {
-            if (_employees.TryGetValue(employee.Passport, out var existingEmployee))
+            var account = employee.Accounts.FirstOrDefault(a => a.Id == accountId);
+            if (account != null)
             {
-                if (existingEmployee.Accounts.ContainsKey(account.Currency.Code))
-                {
-                    var accounts = existingEmployee.Accounts[account.Currency.Code];
-                    var existingAccount = accounts.FirstOrDefault(a => a.Currency.Code == account.Currency.Code);
-
-                    if (existingAccount != null)
-                    {
-                        existingAccount.Amount = account.Amount;
-                    }
-                }
+                employee.Accounts.Remove(account);
+                _dbContext.SaveChanges();
+            }
+            else
+            {
+                throw new Exception("Лицевой счет не найден!");
             }
         }
 
-        public void DeleteAccount(Employee employee, Account account)
+        // Метод возвращающий список сотрудников, удовлетворяющих фильтру (+ пагинация)
+        public IEnumerable<Employee> GetFilteredEmployees(Func<Employee, bool> filter = null, int pageNumber = 1, int pageSize = 10)
         {
-            if (_employees.TryGetValue(employee.Passport, out var existingEmployee))
+            var query = _dbContext.Employees.Include(e => e.Accounts).AsQueryable();
+
+            // Применяем фильтр, если он указан
+            if (filter != null)
             {
-                if (existingEmployee.Accounts.ContainsKey(account.Currency.Code))
-                {
-                    existingEmployee.Accounts[account.Currency.Code].Remove(account);
-                }
-            }
-        }
-
-        public void AddRange(IEnumerable<Employee> employees)
-        {
-            foreach (var employee in employees)
-            {
-                Add(employee);
-            }
-        }
-
-        public Employee GetYoungestEmployee()
-        {
-            Employee youngestEmployee = null;
-
-            foreach (var employee in _employees.Values)
-            {
-                if (youngestEmployee == null || employee.Age < youngestEmployee.Age)
-                {
-                    youngestEmployee = employee;
-                }
-            }
-            return youngestEmployee;
-        }
-
-        public Employee GetOldestEmployee()
-        {
-            Employee oldestEmployee = null;
-
-            foreach (var employee in _employees.Values)
-            {
-                if (oldestEmployee == null || employee.Age > oldestEmployee.Age)
-                {
-                    oldestEmployee = employee;
-                }
-            }
-            return oldestEmployee;
-        }
-
-        public double GetAverageAge()
-        {
-            if (_employees.Count == 0)
-            {
-                return 0;
+                query = query.Where(filter).AsQueryable();
             }
 
-            double totalAge = 0;
-            foreach (var employee in _employees.Values)
-            {
-                totalAge += employee.Age;
-            }
-            return totalAge / _employees.Count;
-        }
-
-        public IEnumerable<Employee> GetAllEmployees()
-        {
-            return _employees.Values.AsEnumerable();
+            // Получаем отфильтрованный и отсортированный список с пагинацией
+            return query
+                .OrderBy(e => e.Name) // Замените на необходимый порядок сортировки
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
         }
     }
 }

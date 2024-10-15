@@ -4,14 +4,13 @@ namespace BankSystem.App.Interfaces
 {
     public interface IClientStorage : IStorage<Client>
     {
-        void AddAccount(Client client, Account account);
-
-        void UpdateAccount(Client client, Account account);
-
-        void DeleteAccount(Client client, Account account);
-
-        IEnumerable<Client> GetAllClients();
-
-        Client GetClientByPassport(int passport);
+        Client GetById(Guid clientId);
+        void Add(Client client);
+        void Update(Client client);
+        void Delete(Client client);
+        void AddAccount(Guid clientId, Account account);
+        void DeleteAccount(Guid clientId, Guid accountId);
+        IEnumerable<Client> GetFilteredClients(Func<Client, bool> filter = null, int pageNumber = 1, int pageSize = 10);
     }
 }
+

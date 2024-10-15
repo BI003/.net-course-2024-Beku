@@ -51,13 +51,10 @@ namespace BankSystem.App.Services
             else if (person is Client client)
             {
                 var defaultCurrency = "USD";
-                if (client.Accounts.ContainsKey(defaultCurrency))
+                var account = client.Accounts.FirstOrDefault(a => a.CurrencyName == defaultCurrency);
+                if (account != null)
                 {
-                    var account = client.Accounts[defaultCurrency].FirstOrDefault();
-                    if (account != null)
-                    {
-                        account.Amount += bonus;
-                    }
+                    account.Amount += bonus;
                 }
             }
         }
