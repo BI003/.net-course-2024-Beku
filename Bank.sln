@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankSystem.Data", "BankSyst
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankSystem.Data.Tests", "BankSystem.Data.Tests\BankSystem.Data.Tests.csproj", "{408919ED-552D-4FEF-B317-D48EE261DF52}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleDb", "ConsoleDb\ConsoleDb.csproj", "{F7B1DAE2-6FF8-4D01-A47E-55A114EE7F16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{408919ED-552D-4FEF-B317-D48EE261DF52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{408919ED-552D-4FEF-B317-D48EE261DF52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{408919ED-552D-4FEF-B317-D48EE261DF52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7B1DAE2-6FF8-4D01-A47E-55A114EE7F16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7B1DAE2-6FF8-4D01-A47E-55A114EE7F16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7B1DAE2-6FF8-4D01-A47E-55A114EE7F16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7B1DAE2-6FF8-4D01-A47E-55A114EE7F16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +70,7 @@ Global
 		{211FA7FC-9254-41DF-BF6E-B8F53EA847FA} = {2DAB60D7-5A6B-4CEC-A89D-2D0EA563B334}
 		{25C19767-8254-4DBB-993E-C634EF76BD20} = {4124601D-716C-41F5-A10D-076405B162A6}
 		{408919ED-552D-4FEF-B317-D48EE261DF52} = {4124601D-716C-41F5-A10D-076405B162A6}
+		{F7B1DAE2-6FF8-4D01-A47E-55A114EE7F16} = {4124601D-716C-41F5-A10D-076405B162A6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0097849E-39FC-49C1-B05C-98D472240A58}
