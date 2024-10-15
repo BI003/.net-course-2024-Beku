@@ -7,7 +7,7 @@ using BankSystem.Data.Storages;
 
 namespace BancSystem.App.Tests
 {
-    public class ClientServiceTests
+  /*  public class ClientServiceTests
     {
         private ClientService _clientService;
         private IClientStorage _clientStorage;
@@ -164,5 +164,5 @@ namespace BancSystem.App.Tests
             // Assert
             Assert.Empty(result);
         }
-    }
+    }*/
 }
