@@ -13,37 +13,37 @@ namespace BankSystem.Data.Storages
             _dbContext = dbContext;
         }
 
-        // Получить клиента по идентификатору
         public Client GetById(Guid clientId)
         {
             return _dbContext.Clients.Include(c => c.Accounts).FirstOrDefault(c => c.Id == clientId);
         }
 
-        // Добавить нового клиента
         public void Add(Client client)
         {
             _dbContext.Clients.Add(client);
             _dbContext.SaveChanges();
         }
 
-        // Изменить клиента
         public void Update(Client client)
         {
+            if (client.Id == Guid.Empty)
+            {
+                throw new Exception("Id клиента не может быть пустым!");
+            }
+
             _dbContext.Clients.Update(client);
             _dbContext.SaveChanges();
         }
 
-        // Удалить клиента
         public void Delete(Client client)
         {
             _dbContext.Clients.Remove(client);
             _dbContext.SaveChanges();
         }
 
-        // Добавить лицевой счет
         public void AddAccount(Guid clientId, Account account)
         {
-            var client = GetById(clientId);
+            var client = _dbContext.Clients.Include(c => c.Accounts).FirstOrDefault(c => c.Id == clientId);
             if (client == null)
             {
                 throw new Exception("Клиент не найден!");
@@ -53,10 +53,9 @@ namespace BankSystem.Data.Storages
             _dbContext.SaveChanges();
         }
 
-        // Удалить лицевой счет
         public void DeleteAccount(Guid clientId, Guid accountId)
         {
-            var client = GetById(clientId);
+            var client = _dbContext.Clients.Include(c => c.Accounts).FirstOrDefault(c => c.Id == clientId);
             if (client == null)
             {
                 throw new Exception("Клиент не найден!");
@@ -74,20 +73,37 @@ namespace BankSystem.Data.Storages
             }
         }
 
-        // Метод возвращающий список клиентов, удовлетворяющих фильтру (+ пагинация)
+        public Client GetYoungestClient()
+        {
+            return _dbContext.Clients.OrderBy(c => c.Age).FirstOrDefault();
+        }
+
+        public Client GetOldestClient()
+        {
+            return _dbContext.Clients.OrderByDescending(c => c.Age).FirstOrDefault();
+        }
+
+        public double GetAverageAge()
+        {
+            if (!_dbContext.Clients.Any())
+            {
+                return 0;
+            }
+
+            return _dbContext.Clients.Average(c => c.Age);
+        }
+
         public IEnumerable<Client> GetFilteredClients(Func<Client, bool> filter = null, int pageNumber = 1, int pageSize = 10)
         {
             var query = _dbContext.Clients.Include(c => c.Accounts).AsQueryable();
 
-            // Применяем фильтр, если он указан
             if (filter != null)
             {
                 query = query.Where(filter).AsQueryable();
             }
 
-            // Получаем отфильтрованный и отсортированный список с пагинацией
             return query
-                .OrderBy(c => c.Name) // Замените на необходимый порядок сортировки
+                .OrderBy(c => c.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
