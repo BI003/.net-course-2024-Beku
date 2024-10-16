@@ -20,9 +20,6 @@ namespace BankSystem.Data.EntityConfigurations
 
             builder.Property(e => e.Contract).IsRequired();
             builder.Property(e => e.Salary).IsRequired();
-
-            builder.HasMany(e => e.Accounts).WithOne().OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }

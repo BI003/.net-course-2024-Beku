@@ -31,20 +31,8 @@ namespace BankSystem.App.Services
             }
 
             _employeeStorage.Add(employee);
-            AddDefaultAccount(employee);
         }
-
-        private void AddDefaultAccount(Employee employee)
-        {
-            var defaultAccount = new Account
-            {
-                CurrencyName = "USD",
-                Amount = 0
-            };
-
-            _employeeStorage.AddAccount(employee.Id, defaultAccount);
-        }
-
+        
         public void EditSalary(Guid employeeId, int newSalary)
         {
             var employee = _employeeStorage.GetById(employeeId);
@@ -76,17 +64,7 @@ namespace BankSystem.App.Services
             account.Amount = newAmount;
             _employeeStorage.Update(employee); // Обновляем сотрудника
         }
-
-        public void AddAdditionalAccount(Guid employeeId, Account newAccount)
-        {
-            _employeeStorage.AddAccount(employeeId, newAccount);
-        }
-
-        public void DeleteAccount(Guid employeeId, Guid accountId)
-        {
-            _employeeStorage.DeleteAccount(employeeId, accountId);
-        }
-
+        
         public IEnumerable<Employee> GetFilteredEmployees(Func<Employee, bool> filter = null, int pageNumber = 1, int pageSize = 10)
         {
             return _employeeStorage.GetFilteredEmployees(filter, pageNumber, pageSize);

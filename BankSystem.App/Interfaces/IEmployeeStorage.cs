@@ -8,8 +8,6 @@ namespace BankSystem.App.Interfaces
         void Add(Employee employee);
         void Update(Employee employee);
         void Delete(Employee employee);
-        void AddAccount(Guid employeeId, Account account);
-        void DeleteAccount(Guid employeeId, Guid accountId);
         IEnumerable<Employee> GetFilteredEmployees(Func<Employee, bool> filter = null, int pageNumber = 1, int pageSize = 10);
     }
 }
