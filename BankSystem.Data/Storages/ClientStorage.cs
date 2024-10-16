@@ -1,181 +1,112 @@
 ﻿using BankSystem.Domain.Models;
 using BankSystem.App.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankSystem.Data.Storages
 {
     public class ClientStorage  : IClientStorage
     {
-        private Dictionary<int, Client> _clients;
+        private readonly BankSystemDbContext _dbContext;
 
-        public ClientStorage() 
+        public ClientStorage(BankSystemDbContext dbContext)
         {
-            _clients = new Dictionary<int, Client>();
-        }
-        private bool ClientExists(int passport)
-        {
-            return _clients.ContainsKey(passport);
+            _dbContext = dbContext;
         }
 
-        public List<Client> Get(Func<Client, bool> filter)
+        public Client GetById(Guid clientId)
         {
-            var result = new List<Client>();
-            foreach (var client in _clients.Values)
-            {
-                if (filter(client))
-                {
-                    result.Add(client);
-                }
-            }
-            return result;
+            return _dbContext.Clients.Include(c => c.Accounts).FirstOrDefault(c => c.Id == clientId);
         }
 
         public void Add(Client client)
         {
-            if (!ClientExists(client.Passport))
-            {
-                _clients.Add(client.Passport, client);
-            }
-            else
-            {
-                throw new Exception("Клиент с таким паспортом уже существует.");
-            }
+            _dbContext.Clients.Add(client);
+            _dbContext.SaveChanges();
         }
 
         public void Update(Client client)
         {
-            if (ClientExists(client.Passport))
+            if (client.Id == Guid.Empty)
             {
-                _clients[client.Passport] = client;
+                throw new Exception("Id клиента не может быть пустым!");
             }
-            else
-            {
-                throw new Exception("Клиент не найден!");
-            }
+
+            _dbContext.Clients.Update(client);
+            _dbContext.SaveChanges();
         }
 
         public void Delete(Client client)
         {
-            if (ClientExists(client.Passport))
+            _dbContext.Clients.Remove(client);
+            _dbContext.SaveChanges();
+        }
+
+        public void AddAccount(Guid clientId, Account account)
+        {
+            var client = _dbContext.Clients.Include(c => c.Accounts).FirstOrDefault(c => c.Id == clientId);
+            if (client == null)
             {
-                _clients.Remove(client.Passport);
+                throw new Exception("Клиент не найден!");
+            }
+
+            client.Accounts.Add(account);
+            _dbContext.SaveChanges();
+        }
+
+        public void DeleteAccount(Guid clientId, Guid accountId)
+        {
+            var client = _dbContext.Clients.Include(c => c.Accounts).FirstOrDefault(c => c.Id == clientId);
+            if (client == null)
+            {
+                throw new Exception("Клиент не найден!");
+            }
+
+            var account = client.Accounts.FirstOrDefault(a => a.Id == accountId);
+            if (account != null)
+            {
+                client.Accounts.Remove(account);
+                _dbContext.SaveChanges();
             }
             else
             {
-                throw new Exception("Клиент не найден!");
-            }
-        }
-
-        public void AddAccount(Client client, Account account)
-        {
-            if (!_clients.ContainsKey(client.Passport))
-            {
-                throw new Exception("Клиент не найден!");
-            }
-
-            if (!client.Accounts.ContainsKey(account.Currency.Code))
-            {
-                client.Accounts[account.Currency.Code] = new List<Account>();
-            }
-
-            client.Accounts[account.Currency.Code].Add(account);
-        }
-
-        public void UpdateAccount(Client client, Account account)
-        {
-            if (_clients.TryGetValue(client.Passport, out var existingClient))
-            {
-                if (existingClient.Accounts.ContainsKey(account.Currency.Code))
-                {
-                    var accounts = existingClient.Accounts[account.Currency.Code];
-                    var existingAccount = accounts.FirstOrDefault(a => a.Currency.Code == account.Currency.Code);
-
-                    if (existingAccount != null)
-                    {
-                        existingAccount.Amount = account.Amount;
-                    }
-                }
-            }
-        }
-
-        public void DeleteAccount(Client client, Account account)
-        {
-            if (_clients.TryGetValue(client.Passport, out var existingClient))
-            {
-                if (existingClient.Accounts.ContainsKey(account.Currency.Code))
-                {
-                    existingClient.Accounts[account.Currency.Code].Remove(account);
-                }
-            }
-        }
-        
-        public void AddAccountToClient(int passport, Account account)
-        {
-            AddAccount(GetClientByPassport(passport), account);
-        }
-
-        public Client GetClientByPassport(int passport)
-        {
-            if (_clients.TryGetValue(passport, out var client))
-            {
-                return client;
-            }
-            throw new Exception("Клиент не найден!");
-        }
-
-        public void AddRange(IEnumerable<Client> clients)
-        {
-            foreach (var client in clients)
-            {
-                Add(client);
+                throw new Exception("Лицевой счет не найден!");
             }
         }
 
         public Client GetYoungestClient()
         {
-            Client youngestClient = null;
-
-            foreach (var client in _clients.Values)
-            {
-                if (youngestClient == null || client.Age < youngestClient.Age)
-                {
-                    youngestClient = client;
-                }
-            }
-            return youngestClient;
+            return _dbContext.Clients.OrderBy(c => c.Age).FirstOrDefault();
         }
 
         public Client GetOldestClient()
         {
-            Client oldestClient = null;
-
-            foreach (var client in _clients.Values)
-            {
-                if (oldestClient == null || client.Age > oldestClient.Age)
-                {
-                    oldestClient = client;
-                }
-            }
-            return oldestClient;
+            return _dbContext.Clients.OrderByDescending(c => c.Age).FirstOrDefault();
         }
 
         public double GetAverageAge()
         {
-            if (_clients.Count == 0)
+            if (!_dbContext.Clients.Any())
             {
                 return 0;
             }
 
-            double totalAge = 0;
-            foreach (var client in _clients.Values)
-            {
-                totalAge += client.Age;
-            }
-            return totalAge / _clients.Count;
+            return _dbContext.Clients.Average(c => c.Age);
         }
 
-        public IEnumerable<Client> GetAllClients()
+        public IEnumerable<Client> GetFilteredClients(Func<Client, bool> filter = null, int pageNumber = 1, int pageSize = 10)
         {
-            return _clients.Values.ToList();
+            var query = _dbContext.Clients.Include(c => c.Accounts).AsQueryable();
+
+            if (filter != null)
+            {
+                query = query.Where(filter).AsQueryable();
+            }
+
+            return query
+                .OrderBy(c => c.Name)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
         }
     }
 }

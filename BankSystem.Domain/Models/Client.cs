@@ -2,11 +2,11 @@
 {
     public class Client : Person
     {
-        public Dictionary<string, List<Account>> Accounts { get; set; }
+        public List<Account> Accounts { get; set; }
 
         public Client()
         {
-            Accounts = new Dictionary<string, List<Account>>();
+            Accounts = new List<Account>();
         }
 
         public override bool Equals(object obj)

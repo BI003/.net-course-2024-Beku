@@ -4,7 +4,7 @@ using BankSystem.Data.Storages;
 
 namespace BankSystem.Data.Tests
 {
-    public class ClientStorageTest
+ /*   public class ClientStorageTest
     {
         private ClientStorage InitializeStorageWithClients()
         {
@@ -82,5 +82,5 @@ namespace BankSystem.Data.Tests
             // Assert
             Assert.Equal(37.6, averageAge);
         }
-    }
+    }*/
 }

@@ -26,78 +26,55 @@ namespace BankSystem.App.Services
             }
 
             _clientStorage.Add(client);
-            AddDefaultAccount(client.Passport);
+            AddDefaultAccount(client.Id);
         }
 
-        private void AddDefaultAccount(int passport)
+        private void AddDefaultAccount(Guid clientId)
         {
-            var defaultCurrency = new Currency()
+            var defaultAccount = new Account
             {
-                Code = "USD",
-                Name = "Dollar"
-            };
-
-            var defaultAccount = new Account()
-            {
-                Currency = defaultCurrency,
+                CurrencyName = "USD",
                 Amount = 0
             };
 
-            var client = _clientStorage.GetClientByPassport(passport);
-            if (client != null)
-            {
-                _clientStorage.AddAccount(client, defaultAccount);
-            }
-            else
-            {
-                throw new Exception("Клиент не найден!");
-            }
+            _clientStorage.AddAccount(clientId, defaultAccount);
         }
 
-        public void EditAccount(int passport, string currencyCode, decimal newAmount)
+        public Client GetClientById(Guid clientId)
         {
-            var client = _clientStorage.GetClientByPassport(passport);
+            return _clientStorage.GetById(clientId);
+        }
 
+        public void UpdateClient(Guid clientId, Client updatedClient)
+        {
+            updatedClient.Id = clientId; // Убедитесь, что Id установлен
+            _clientStorage.Update(updatedClient);
+        }
+
+        public void DeleteClient(Guid clientId)
+        {
+            var client = _clientStorage.GetById(clientId);
             if (client == null)
             {
                 throw new Exception("Клиент не найден!");
             }
 
-            if (!client.Accounts.TryGetValue(currencyCode, out var accountList) || accountList == null || !accountList.Any())
-            {
-                throw new Exception($"Счета в валюте {currencyCode} не найдены.");
-            }
-
-            var account = accountList.FirstOrDefault();
-
-            if (account == null)
-            {
-                throw new Exception($"Счёт в валюте {currencyCode} не найден.");
-            }
-
-            account.Amount = newAmount;
+            _clientStorage.Delete(client);
         }
 
-        public void AddAdditionalAccount(int passport, Account newAccount)
+        public void AddAdditionalAccount(Guid clientId, Account newAccount)
         {
-            var client = _clientStorage.GetClientByPassport(passport);
-
-            if (client == null)
-            {
-                throw new Exception("Клиент не найден!");
-            }
-
-            if (!client.Accounts.ContainsKey(newAccount.Currency.Code))
-            {
-                client.Accounts[newAccount.Currency.Code] = new List<Account>();
-            }
-
-            client.Accounts[newAccount.Currency.Code].Add(newAccount);
+            _clientStorage.AddAccount(clientId, newAccount);
         }
 
-        public IEnumerable<Client> GetFilteredClients(Func<Client, bool> filter = null)
+        public void DeleteAccount(Guid clientId, Guid accountId)
         {
-            return _clientStorage.Get(filter);
+            _clientStorage.DeleteAccount(clientId, accountId);
+        }
+
+        public IEnumerable<Client> GetFilteredClients(Func<Client, bool> filter = null, int pageNumber = 1, int pageSize = 10)
+        {
+            return _clientStorage.GetFilteredClients(filter, pageNumber, pageSize);
         }
     }
 }

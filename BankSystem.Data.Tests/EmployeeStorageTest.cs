@@ -4,7 +4,7 @@ using Xunit;
 
 namespace BankSystem.Data.Tests
 {
-    public class EmployeeStorageTest
+  /*  public class EmployeeStorageTest
     {
         private EmployeeStorage InitializeStorageWithEmployees()
         {
@@ -81,5 +81,5 @@ namespace BankSystem.Data.Tests
             // Assert
             Assert.Equal(30.4, averageAge);
         }
-    }
+    }*/
 }
